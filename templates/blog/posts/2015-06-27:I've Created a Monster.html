@@ -1,0 +1,19 @@
+{% extends "layouts/default.html" %}
+{% block title %}I've Created a Monster{% endblock %}
+{% block content %}
+<div class="content"> 
+<h3>I've Created a Monster</h3>
+
+<h3>2015-06-27</h3>
+
+<p>Today I wrote a static blog generator in ruby, and I've affectionately given it the name Blarg. It's basic workings when 
+called without any arguments are as follows: 
+Get a list of files from a directory &#8594; Get a list of files from the blog index &#8594; Compare the two &#8594; Update the blog index 
+as necessary &#8594; Update the homepage with the latest blog post. 
+When called with arguments it takes a template file and a markdown file then squishes them together resulting in a fresh 
+new blog post. The post is then popped into the posts directory and the update function is run. Blarg also houses some 
+ridiculous one-liners like <code>template = "&lt;li&gt;#{date} &amp;raquo; &lt;a href='posts/#{date}:#{subject.gsub("'", "&amp;#39;")}'&gt;#{subject.gsub(".html", "")}&lt;/a&gt;&lt;/li&gt;\n"</code> 
+It currently relies on the gems <a href="http://www.nokogiri.org">nokogiri</a> and <a href="https://github.com/vmg/redcarpet">redcarpet</a>. If you 
+hate yourself you can check it out <a href="https://github.com/Peytonien/Blarg">here</a></p>
+</div>
+{% endblock %}
