@@ -55,7 +55,7 @@
 ;; Routing rules
 
 (defroute "/" ()
-  (render (first (absolute-directory "blog/posts/*.html"))))
+  (render (first (reverse (absolute-directory "blog/posts/*.html")))))
 
 (defroute "/blog" ()
           (render (absolute-path "blog/index.html")
