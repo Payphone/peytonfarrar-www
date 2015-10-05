@@ -6,8 +6,7 @@
         :peytonwww.view
         :peytonwww.db
         :datafly
-        :sxql
-        :cl-who)
+        :sxql)
   (:export :*web*))
 (in-package :peytonwww.web)
 
