@@ -2,7 +2,7 @@
 The source for the website peytonfarrar.com built using caveman2
 
 ## Installation
-1. Install SBCL preferrably with threading support
+1. Install SBCL preferably with threading support
 2. Install [Quicklisp](https://www.quicklisp.org/beta/)
 3. Clone the repository
 
