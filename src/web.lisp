@@ -1,5 +1,5 @@
 (in-package :cl-user)
-(defpackage peytonwww.web
+(defpackage peytonwww.web 
   (:use :cl
         :caveman2
         :peytonwww.config
@@ -16,7 +16,6 @@
 (defclass <web> (<app>) ()) 
 (defvar *web* (make-instance '<web>))
 (clear-routing-rules *web*)
-
 ;;
 ;; Helper funtions
 
@@ -67,6 +66,15 @@
         (if (find post-path (absolute-directory "blog/posts/*.html") :test #'equal)
           (render post-path)
           (render #P"_errors/404.html"))))
+
+(defroute "/jazz" ()
+  (let ((images (directory (merge-pathnames "static/images/Night/*.*" *application-root*)))
+		(songs (directory (merge-pathnames "static/music/Jazz/*.ogg" *application-root*))))
+	(render (absolute-path "jazz.html")
+  			(list :image (enough-namestring (nth (random (list-length images)) images)
+											*static-directory*)
+				  :song (enough-namestring (nth (random (list-length songs)) songs)
+										    *static-directory*)))))
 
 ;;
 ;; Error pages

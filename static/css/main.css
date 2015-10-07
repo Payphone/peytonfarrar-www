@@ -34,6 +34,12 @@ a:hover {
 	line-height: 25px;
 }
 
+.largeImage {
+	position: relative;
+	left: 5%;
+	max-width: 90%;
+}
+
 .postlist {
 	left: 30%;
 }
