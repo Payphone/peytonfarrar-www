@@ -4,6 +4,10 @@ body {
 	background-color: #EFEFEF;
 }
 
+.dark {
+	background-color: #1A1A1A;
+}
+
 h2 {
 	font-size: 2em;
 }
