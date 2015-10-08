@@ -22,10 +22,10 @@ look something like:
 ```
 http {
 	server { 
-		listen       80;                                                                                                      
-		location / {                                                                                                          
+		listen       80;
+		location / {
 			proxy_pass http://0.0.0.0:8000;
-			charset utf-8;                                                                                                      
- 	}                                                                                                                     
+			charset utf-8;
+ 	}
 }
 ```
