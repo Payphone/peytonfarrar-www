@@ -25,21 +25,23 @@
 (defun absolute-directory (directory-path)
   (directory (absolute-path directory-path)))
 
-; Blog post helper functions
+;;
+;; Blog post functions
+
 ; Example post: 2015-06-27:I've created a Monster
 ; Note that the date is a 10 character string and the colon is at charater 11
-(defun post-extract-date (post-file-name)
-  (subseq post-file-name 0 10))
+(defun post-extract-date (file-name)
+  (subseq file-name 0 10))
 
-(defun post-extract-subject (post-file-name)
-  (subseq post-file-name 11))
+(defun post-extract-subject (file-name)
+  (subseq file-name 11))
 
 (defun post-p (file-name)
   (if (equal (subseq file-name 10 11) ":")
     t
     nil))
 
-(defun generate-post (post-directory)
+(defun generate-post-list (post-directory)
   (let ((post-list nil))
     (dolist (p post-directory)
       (let ((post (pathname-name p)))
@@ -49,7 +51,31 @@
                       :url (format nil "/blog/posts/~A.html" post))
                 post-list))))
     (list :posts post-list)))
-    
+
+(defun format-post (str post-file)
+  (format str "{% extends \"layouts/default.html\" %} ~%
+               {% block title %}~A{% endblock %} ~% 
+               {% block content %} ~%
+			   <div class='content'> ~%" 
+	          (post-extract-subject (pathname-name post-file)))
+  (cl-markdown:markdown post-file :stream str)
+  (format str "</div> ~%
+               {% endblock %} ~%"))
+
+(defun markdown-to-html (markdown-list)
+  (if (eq markdown-list nil) 
+	nil
+	(let ((markdown-file (first markdown-list)))
+		(with-open-file (md (make-pathname :directory (pathname-directory markdown-file)
+										   :name (pathname-name markdown-file)
+										   :type "html")
+						    :direction :output
+						    :if-exists :supersede
+							:if-does-not-exist :create)
+		  (format-post md markdown-file))
+		(delete-file markdown-file)
+	    (markdown-to-html (cdr markdown-list)))))
+
 ;;
 ;; Routing rules
 
@@ -57,8 +83,10 @@
   (render (first (reverse (absolute-directory "blog/posts/*.html")))))
 
 (defroute "/blog" ()
-          (render (absolute-path "blog/index.html")
-                  (generate-post (absolute-directory "blog/posts/*.html"))))
+  (unless (eq (absolute-directory "blog/posts/*.md") nil)
+	(markdown-to-html (absolute-directory "blog/posts/*.md")))
+  (render (absolute-path "blog/index.html")
+		  (generate-post-list (absolute-directory "blog/posts/*.html"))))
 
 (defroute "/blog/posts/*.html" (&key splat)
   (let* ((post-name (first splat))
