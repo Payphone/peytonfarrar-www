@@ -14,3 +14,18 @@ dependencies and load the project. You can now start the server with
 `(peytonwww:start :port 8000)`, and you will be able to see the webpage at
 localhost:8000. You can stop the server at time from the SBCL prompt by
 running `(peytonwww:stop)`.
+
+## Deployment
+I am currently using NGINX to deploy the server. This can be done by using
+NGINX as a reverse proxy for the web server. The configuration for this would
+look something like: 
+```
+http {
+	server { 
+		listen       80;                                                                                                      
+		location / {                                                                                                          
+			proxy_pass http://0.0.0.0:8000;
+			charset utf-8;                                                                                                      
+ 	}                                                                                                                     
+}
+```
