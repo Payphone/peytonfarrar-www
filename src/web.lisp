@@ -58,7 +58,7 @@
 
 (defun post-count ()
   (with-connection (db)
-    (cadr (retrieve-one (select ((:count :*)) (from :post))))))
+    (cadr (retrieve-one (select ((:count :*)) (from :posts))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
@@ -73,7 +73,7 @@
 
 (defroute "/blog" ()
   (let ((post-list nil))
-    (dotimes (n (row-count)) 
+    (dotimes (n (post-count)) 
       (let ((id (+ n 1)))
         (push (list :subject (post-subject (post-by-id id))
                     :date (format-date (post-date (post-by-id id)))
