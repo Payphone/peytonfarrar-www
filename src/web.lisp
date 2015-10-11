@@ -44,7 +44,7 @@
   (with-connection (db)
     (retrieve-one
       (select :*
-        (from :post)
+        (from :posts)
         (order-by (:desc :id)))
       :as 'post)))
 
@@ -52,9 +52,13 @@
   (with-connection (db)
     (retrieve-one
       (select :*
-        (from :post)
+        (from :posts)
         (where (:= :id id)))
       :as 'post)))
+
+(defun post-count ()
+  (with-connection (db)
+    (cadr (retrieve-one (select ((:count :*)) (from :post))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
@@ -69,7 +73,7 @@
 
 (defroute "/blog" ()
   (let ((post-list nil))
-    (dotimes (n 2) 
+    (dotimes (n (row-count)) 
       (let ((id (+ n 1)))
         (push (list :subject (post-subject (post-by-id id))
                     :date (format-date (post-date (post-by-id id)))
