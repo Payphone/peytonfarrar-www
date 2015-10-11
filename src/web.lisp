@@ -28,8 +28,7 @@
 
 (defparameter *time-format* '((:year 4) #\- (:month 2) #\- (:day 2)))
 (defun format-date (date)
-  (local-time:format-timestring nil (local-time:universal-to-timestamp date) :format *time-format*))
-
+  (local-time:format-timestring nil (local-time:universal-to-timestamp date) :format *time-format*)) 
 ;;
 ;; Blog post functions
 
@@ -58,7 +57,7 @@
 
 (defun post-count ()
   (with-connection (db)
-    (cadr (retrieve-one (select ((:count :*)) (from :posts) (limit 10))))))
+    (cadr (retrieve-one (select ((:count :*)) (from :posts))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
@@ -72,22 +71,27 @@
 (defroute "/" ()
   (render-post (latest-post)))
 
-(defroute "/blog" ()
-  (let ((post-list nil))
-    (dotimes (n (post-count)) 
-      (let ((id (+ n 1)))
-        (push (list :subject (post-subject (post-by-id id))
-                    :date (format-date (post-date (post-by-id id)))
-                    :url (format nil "/blog/post/~A" (post-id (post-by-id id))))
-              post-list)))
-      (render (absolute-path "blog_index.html")
-              (list :posts post-list))))
+(defroute ("/blog/page/([\\d]+)" :regexp :t) (&key captures)
+  (render (absolute-path "blog_index.html")
+          (do* ((post-list nil)
+                (page (parse-integer (first captures)))
+                (page-end (* page 10))
+                (page-start (- page-end 10))
+                (id page-start (1+ id))) 
+            ((> id page-end) (list :posts post-list))
+            (if (eq (post-by-id id) nil)
+              nil
+              (push (list :subject (post-subject (post-by-id id))
+                          :date (format-date (post-date (post-by-id id)))
+                          :url (format nil "/blog/post/~A" (post-id (post-by-id id))))
+                    post-list)))))
+    
 
-(defroute "/blog/post/:id" (&key id)
-  (let ((post-id (parse-integer id :junk-allowed t)))
-    (if (and (integerp post-id) (not (eq (post-by-id post-id) nil)))
-       (render-post (post-by-id post-id))
-       (render #P"_errors/404.html"))))
+(defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
+  (let ((id (parse-integer (first captures))))
+    (if (eq (post-by-id id) nil)
+      (render #P"_errors/404.html")
+      (render-post (post-by-id (first captures))))))
 
 (defroute "/jazz" ()
   (let ((images (directory (merge-pathnames "static/images/Night/*.jpg" *application-root*)))
