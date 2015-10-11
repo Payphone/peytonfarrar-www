@@ -58,13 +58,14 @@
 
 (defun post-count ()
   (with-connection (db)
-    (cadr (retrieve-one (select ((:count :*)) (from :posts))))))
+    (cadr (retrieve-one (select ((:count :*)) (from :posts) (limit 10))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
           (list :title (post-subject post)
                 :date (format-date (post-date post))
                 :content (post-content post))))
+
 ;;
 ;; Routing rules
 
