@@ -24,7 +24,13 @@
   (merge-pathnames file-path *template-directory*))
 
 (defun absolute-directory (directory-path)
-  (directory (absolute-path directory-path)))
+  (directory (absolute-path directory-path))) 
+
+(defun root-path (file-path)
+  (merge-pathnames file-path *application-root*))
+
+(defun root-directory (directory-path)
+  (directory (root-path directory-path)))
 
 (defparameter *time-format* '((:year 4) #\- (:month 2) #\- (:day 2)))
 (defun format-date (date)
@@ -86,7 +92,6 @@
                           :url (format nil "/blog/post/~A" (post-id (post-by-id id))))
                     post-list)))))
     
-
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
     (if (eq (post-by-id id) nil)
@@ -94,8 +99,8 @@
       (render-post (post-by-id (first captures))))))
 
 (defroute "/jazz" ()
-  (let ((images (directory (merge-pathnames "static/images/Night/*.jpg" *application-root*)))
-		(songs (directory (merge-pathnames "static/music/Jazz/*.ogg" *application-root*))))
+  (let ((images (root-directory "static/images/Night/*.jpg"))
+		(songs (root-directory "static/music/Jazz/*.ogg")))
 	(render (absolute-path "jazz.html")
   			(list :image (enough-namestring (nth (random (list-length images)) images)
 											*static-directory*)
