@@ -20,12 +20,21 @@ I am currently using NGINX to deploy the server. This can be done by using
 NGINX as a reverse proxy for the web server. The configuration for this would
 look something like: 
 ```
-http {
-	server { 
-		listen       80;
-		location / {
-			proxy_pass http://0.0.0.0:8000;
-			charset utf-8;
+server { 
+	listen       80;
+	location / {
+		proxy_pass http://0.0.0.0:8000;
+		charset utf-8;
  	}
-}
+```
+For setting up PostgreSQL create a database named postdb and add the following
+table to it:
+```
+CREATE TABLE posts (
+	id serial primary key,
+	subject varchar(64),
+	date bigint,
+	content text,
+	tags text
+);
 ```
