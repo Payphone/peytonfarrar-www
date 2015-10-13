@@ -25,7 +25,7 @@ server {
 	location / {
 		proxy_pass http://0.0.0.0:8000;
 		charset utf-8;
- 	}
+}
 ```
 For setting up PostgreSQL create a database named postdb and add the following
 table to it:
