@@ -29,7 +29,7 @@ a:hover {
     font-family: 'Nunito', sans-serif; font-weight: 400;
 }
 
-.content {
+.content, .postlist {
 	position: relative;
 	margin: 1% 25%; 
 	width: 50%;
@@ -37,14 +37,20 @@ a:hover {
 	line-height: 25px;
 }
 
+@media only screen and (max-width: 420px) {
+	.content {
+		position: relative;
+		margin: 1% 1%; 
+		width: 98%;
+		color: #000;
+		line-height: 25px;
+	}
+}
+
 .largeImage {
 	position: relative;
 	left: 5%;
 	max-width: 90%;
-}
-
-.postlist {
-	margin: auto;
 }
 
 ul {
