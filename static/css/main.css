@@ -38,10 +38,10 @@ a:hover {
 }
 
 @media only screen and (max-width: 420px) {
-	.content {
+	.content, .postlist {
 		position: relative;
-		margin: 1% 1%; 
-		width: 98%;
+		margin: 1% 5%; 
+		width: 90%;
 		color: #000;
 		line-height: 25px;
 	}
