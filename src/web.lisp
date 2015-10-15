@@ -61,6 +61,14 @@
         (where (:= :id id)))
       :as 'post)))
 
+(defun post-by-tag (tag)
+  (with-connection (db)
+    (retrieve-all
+      (select :*
+        (from :posts)
+        (where (:raw (format nil "tags similar to '%((~A))%'" tag))))
+      :as 'post)))
+
 (defun post-count ()
   (with-connection (db)
     (cadr (retrieve-one (select ((:count :*)) (from :posts))))))
