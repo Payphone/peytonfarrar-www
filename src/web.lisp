@@ -49,13 +49,16 @@
         (from :posts)
         (where (:= :id id))))))
 
-(defun posts-by-limit (post-limit)
-  (with-connection (db)
-    (retrieve-all
-      (select :*
-        (from :posts)
-        (order-by (:desc :id))
-        (limit post-limit)))))
+(defun posts-by-limit (post-limit post-offset)
+  (if (< post-offset 0)
+    nil
+    (with-connection (db)
+      (retrieve-all
+        (select :*
+          (from :posts)
+          (offset post-offset)
+          (order-by (:desc :id))
+          (limit post-limit))))))
 
 (defun posts-by-tag (tag)
   (with-connection (db)
@@ -75,8 +78,9 @@
   (render-post (latest-post)))
 
 (defroute ("/blog/page/([\\d]+)" :regexp :t) (&key captures)
-  (render (absolute-path "blog_index.html")
-          (list :posts (posts-by-limit 10))))
+  (let* ((id (parse-integer (first captures))))
+    (render (absolute-path "blog_index.html")
+            (list :posts (posts-by-limit 10 (* 10 (1- id)))))))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
