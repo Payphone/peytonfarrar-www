@@ -32,52 +32,41 @@
 (defun root-directory (directory-path)
   (directory (root-path directory-path)))
 
-(defparameter *time-format* '((:year 4) #\- (:month 2) #\- (:day 2)))
-(defun format-date (date)
-  (local-time:format-timestring nil (local-time:universal-to-timestamp date) :format *time-format*)) 
 ;;
 ;; Blog post functions
-
-(defstruct post
-  id
-  subject
-  date
-  content
-  tags)
 
 (defun latest-post ()
   (with-connection (db)
     (retrieve-one
       (select :*
         (from :posts)
-        (order-by (:desc :id)))
-      :as 'post)))
+        (order-by (:desc :id))))))
 
 (defun post-by-id (id)
   (with-connection (db)
     (retrieve-one
       (select :*
         (from :posts)
-        (where (:= :id id)))
-      :as 'post)))
+        (where (:= :id id))))))
 
-(defun post-by-tag (tag)
+(defun posts-by-limit (post-limit)
   (with-connection (db)
     (retrieve-all
       (select :*
         (from :posts)
-        (where (:raw (format nil "tags similar to '%((~A))%'" tag))))
-      :as 'post)))
+        (order-by (:desc :id))
+        (limit post-limit)))))
 
-(defun post-count ()
+(defun posts-by-tag (tag)
   (with-connection (db)
-    (cadr (retrieve-one (select ((:count :*)) (from :posts))))))
+    (retrieve-all
+      (select :*
+        (from :posts)
+        (where (:raw (format nil "tags similar to '%((~A))%'" tag)))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
-          (list :title (post-subject post)
-                :date (format-date (post-date post))
-                :content (post-content post))))
+          post))
 
 ;;
 ;; Routing rules
@@ -87,19 +76,8 @@
 
 (defroute ("/blog/page/([\\d]+)" :regexp :t) (&key captures)
   (render (absolute-path "blog_index.html")
-          (do* ((post-list nil)
-                (page (parse-integer (first captures)))
-                (page-end (* page 10))
-                (page-start (- page-end 10))
-                (id page-start (1+ id))) 
-            ((> id page-end) (list :posts post-list))
-            (if (eq (post-by-id id) nil)
-              nil
-              (push (list :subject (post-subject (post-by-id id))
-                          :date (format-date (post-date (post-by-id id)))
-                          :url (format nil "/blog/post/~A" (post-id (post-by-id id))))
-                    post-list)))))
-    
+          (posts-by-limit 10)))
+
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
     (if (eq (post-by-id id) nil)

@@ -1,9 +1,9 @@
 {% extends "layouts/default.html" %}
-{% block title %}{{ title }}{% endblock %}
+{% block title %}{{ subject }}{% endblock %}
 {% block content %}
 <div class="content">
-<h3>{{ title }}</h3>
-<h3>{{ date }}</h3>
+<h3>{{ subject }}</h3>
+<h3>{{ date|date }}</h3>
 	<p>{{ content|safe }}</p>
 </div>
 {% endblock %}
