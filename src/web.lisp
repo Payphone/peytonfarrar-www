@@ -76,7 +76,7 @@
 
 (defroute ("/blog/page/([\\d]+)" :regexp :t) (&key captures)
   (render (absolute-path "blog_index.html")
-          (posts-by-limit 10)))
+          (list :posts (posts-by-limit 10))))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))

@@ -1,10 +1,10 @@
 {% extends "layouts/default.html" %}
-{% block title %}{{ subject }}{% endblock %}
+{% block title %}Blog{% endblock %}
 {% block content %}
 <div class="postlist"> 
 	<ul> 
 		{% for post in posts %}
-		<li>{{ date|date }} >> <a href="/blog/post/{{ id }}">{{ subject }}</a></li>
+		<li>{{ post.date|date }} >> <a href="/blog/post/{{ post.id }}">{{ post.subject }}</a></li>
 		{% endfor %}		
 	</ul>
 </div>
