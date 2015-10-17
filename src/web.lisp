@@ -101,7 +101,7 @@
           (let* ((tag (first captures))
                  (page (parse-integer (second captures)))
                  (posts (get-posts 10 :post-offset (* 10 (1- page)) :tag tag)))
-            (if (eq (cadr posts) nil)
+            (if (eq (car posts) nil)
               (render (absolute-path "_errors/404.html"))
               (render (absolute-path "blog_index.html")
                       (list :posts posts)))))
