@@ -35,6 +35,13 @@
 ;;
 ;; Blog post functions
 
+(defstruct post
+     id
+     subject
+     date
+     content
+     tags)
+
 (defun latest-post ()
   (car (get-posts 1)))
 
@@ -43,7 +50,8 @@
     (retrieve-one
       (select :*
         (from :posts)
-        (where (:= :id id))))))
+        (where (:= :id id)))
+      :as 'post)))
 
 (defun get-posts (post-limit &key (post-offset 0) (tag ""))
   (if (< post-offset 0)
@@ -59,7 +67,10 @@
 
 (defun render-post (post)
   (render (absolute-path "post.html")
-          post))
+          (list :subject (post-subject post)
+                :date (post-date post)
+                :content (post-content post)
+                :tags (split-sequence:split-sequence #\Space (post-tags post)))))
 
 ;;
 ;; Routing rules
@@ -88,7 +99,7 @@
             (if (eq (cadr posts) nil)
               (render (absolute-path "_errors/404.html"))
               (render (absolute-path "blog_index.html")
-                      posts))))
+                      (list :posts posts)))))
 
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))

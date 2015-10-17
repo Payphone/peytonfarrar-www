@@ -25,6 +25,12 @@ a:hover {
             transition: 0.2s ease;
 }
 
+hr {
+	border: 0;
+	height: 3px;
+	background: #36454F;
+}
+
 .header, .header h2 a {
     font-family: 'Nunito', sans-serif; font-weight: 400;
 }
