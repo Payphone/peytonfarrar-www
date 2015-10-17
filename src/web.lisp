@@ -36,11 +36,7 @@
 ;; Blog post functions
 
 (defun latest-post ()
-  (with-connection (db)
-    (retrieve-one
-      (select :*
-        (from :posts)
-        (order-by (:desc :id))))))
+  (car (get-posts 1)))
 
 (defun post-by-id (id)
   (with-connection (db)
@@ -49,7 +45,7 @@
         (from :posts)
         (where (:= :id id))))))
 
-(defun posts-by-limit (post-limit post-offset)
+(defun get-posts (post-limit &key (post-offset 0) (tag ""))
   (if (< post-offset 0)
     nil
     (with-connection (db)
@@ -58,14 +54,8 @@
           (from :posts)
           (offset post-offset)
           (order-by (:desc :id))
+          (where (:raw (format nil "tags similar to '%((~A))%'" tag)))
           (limit post-limit))))))
-
-(defun posts-by-tag (tag)
-  (with-connection (db)
-    (retrieve-all
-      (select :*
-        (from :posts)
-        (where (:raw (format nil "tags similar to '%((~A))%'" tag)))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
@@ -77,16 +67,28 @@
 (defroute "/" ()
   (render-post (latest-post)))
 
-(defroute ("/blog/page/([\\d]+)" :regexp :t) (&key captures)
-  (let* ((id (parse-integer (first captures))))
-    (render (absolute-path "blog_index.html")
-            (list :posts (posts-by-limit 10 (* 10 (1- id)))))))
+(defroute ("/blog/page/([1-9]+)" :regexp :t) (&key captures)
+  (let* ((page (parse-integer (first captures)))
+         (posts (list :posts (get-posts 10 :post-offset (* 10 (1- page))))))
+    (if (eq (cadr posts) nil)
+      (render (absolute-path "_errors/404.html"))
+      (render (absolute-path "blog_index.html")
+              posts))))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
     (if (eq (post-by-id id) nil)
       (render #P"_errors/404.html")
       (render-post (post-by-id (first captures))))))
+
+(defroute ("/blog/tag/([\\w]+)/([1-9]+)" :regexp :t) (&key captures)
+          (let* ((tag (first captures))
+                 (page (parse-integer (second captures)))
+                 (posts (get-posts 10 :post-offset (* 10 (1- page)) :tag tag)))
+            (if (eq (cadr posts) nil)
+              (render (absolute-path "_errors/404.html"))
+              (render (absolute-path "blog_index.html")
+                      posts))))
 
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))

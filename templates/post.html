@@ -5,5 +5,9 @@
 <h3>{{ subject }}</h3>
 <h3>{{ date|date }}</h3>
 	<p>{{ content|safe }}</p>
+	{% ifnotequal tags  "nothing" %}
+		<hr />
+		{{ tags  }}
+	{% endifnotequal %}
 </div>
 {% endblock %}
