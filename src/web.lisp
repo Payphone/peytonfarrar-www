@@ -43,7 +43,12 @@
      tags)
 
 (defun latest-post ()
-  (car (get-posts 1)))
+  (with-connection (db)
+    (retrieve-one
+      (select :*
+        (from :posts)
+        (order-by (:desc :id)))
+      :as 'post)))
 
 (defun post-by-id (id)
   (with-connection (db)
