@@ -27,14 +27,3 @@ server {
 		charset utf-8;
 }
 ```
-For setting up PostgreSQL create a database named postdb and add the following
-table to it:
-```
-CREATE TABLE posts (
-	id serial primary key,
-	subject varchar(64),
-	date bigint,
-	content text,
-	tags text
-);
-```
