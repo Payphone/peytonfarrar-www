@@ -78,10 +78,47 @@
                 :tags (split-sequence:split-sequence #\Space (post-tags post)))))
 
 ;;
+;; User functions
+
+(defstruct user
+  id
+  username
+  password
+  groups)
+
+(defun get-user (username password)
+  (with-connection (db)
+    (retrieve-one
+      (select :*
+        (from :users)
+        (where (:and (:= :username username)
+                     (:raw (format nil "password = crypt(\'~A\', password)" password)))))
+      :as 'user)))
+;;
 ;; Routing rules
 
 (defroute "/" ()
   (render-post (latest-post)))
+
+(defroute ("/login" :method :GET) (&key |error|)
+  (render (absolute-path "login.html")
+          (if (string= |error| "t")
+            (list :text "  Incorrect username or password")
+            nil)))
+
+(defroute ("/login" :method :POST) (&key |username| |password|)
+  (let ((current-user (get-user |username| |password|)))
+    (when (eq current-user nil)
+      (redirect "/login?error=t"))  
+    (unless (eq current-user nil)
+      (clrhash *session*)
+      (setf (gethash :username *session*) |username|)
+      (setf (gethash :groups *session*) (user-groups current-user))
+      (redirect "/"))))
+    
+(defroute "/logout" ()
+    (clrhash *session*)
+    (redirect "/login"))
 
 (defroute ("/blog/page/([1-9]+)" :regexp :t) (&key captures)
   (let* ((page (parse-integer (first captures)))
