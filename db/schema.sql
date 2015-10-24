@@ -7,8 +7,8 @@ CREATE TABLE posts (
 );
 
 CREATE TABLE users (
-	id serial primary key,
-	username varchar(64),
-	password text,
-	groups text
+    id serial primary key,
+    username varchar(64),
+    password text,
+    groups text
 );
