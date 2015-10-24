@@ -1,0 +1,15 @@
+{% extends "layouts/default.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="content">
+	<h2>Login</h2>
+	<div class="alert-error">
+		<b class="alert-text">{{ text|safe }}</b>
+	</div>
+	<form action="/login" method="post">
+		<h4>Username:<input type="text" name="username" /></h4>
+		<h4>Password:<input type="password" name="password" /></h4>
+		<input type="submit" value="Submit">
+	</form>
+</div>
+{% endblock %}
