@@ -4,7 +4,7 @@
         :caveman2
         :peytonwww.config
         :peytonwww.view
-        :peytonwww.db
+        :peytonwww.db 
         :datafly
         :sxql)
   (:export :*web*))
@@ -36,11 +36,11 @@
 ;; Blog post functions
 
 (defstruct post
-     id
-     subject
-     date
-     content
-     tags)
+  id
+  subject
+  date
+  content
+  tags)
 
 (defun latest-post ()
   (with-connection (db)
@@ -110,10 +110,10 @@
   (let ((images (root-directory "static/images/Night/*.jpg"))
 		(songs (root-directory "static/music/Jazz/*.ogg")))
 	(render (absolute-path "jazz.html")
-  			(list :image (enough-namestring (nth (random (list-length images)) images)
-											*static-directory*)
-				  :song (enough-namestring (nth (random (list-length songs)) songs)
-										    *static-directory*)))))
+  		(list :image (enough-namestring (nth (random (list-length images)) images)
+                        *static-directory*)
+		      :song (enough-namestring (nth (random (list-length songs)) songs)
+                        *static-directory*)))))
 
 ;;
 ;; Error pages
