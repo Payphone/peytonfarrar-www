@@ -77,6 +77,15 @@
                 :content (post-content post)
                 :tags (split-sequence:split-sequence #\Space (post-tags post)))))
 
+(defun submit-post (subject date content tags)
+  (with-connection (db)
+    (execute
+      (insert-into :posts
+        (set= :subject subject
+              :date date
+              :content content
+              :tags tags)))))
+
 ;;
 ;; User functions
 
@@ -142,6 +151,22 @@
               (render (absolute-path "_errors/404.html"))
               (render (absolute-path "blog_index.html")
                       (list :posts posts)))))
+
+(defroute ("/blog/new" :method :GET) (&key |error|)
+  (if (not (search "dev" (gethash :groups *session*)))
+    (render (absolute-path "_errors/nopermissions.html"))
+    (render (absolute-path "new_post.html")
+            (if (string= |error| "t")
+              (list :text "  Please enter a subject")
+              nil))))
+
+(defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
+  (when (search "dev" (gethash :groups *session*))
+    (when (eq (length |subject|) 0)
+      (redirect "/blog/new?error=t"))
+    (unless (eq (length |subject|) 0)
+      (submit-post |subject| (get-universal-time) |content| |tags|)
+      (redirect "/"))))
 
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))

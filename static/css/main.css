@@ -1,8 +1,8 @@
 body {
-	font: 16px sans-serif;
-	font-family: 'Metrophobic', Arial, serif; font-weight: 400;
-	background-color: #EFEFEF;
-	height: 100%;
+    font: 16px sans-serif;
+    font-family: 'Metrophobic', Arial, serif; font-weight: 400;
+    background-color: #EFEFEF;
+    height: 100%;
 }
 
 .dark {
@@ -99,8 +99,50 @@ code {
     background-color: #f2dede;
     border-color: #eed3d7;
     color: #b94a48;
+	margin-bottom: 10px;
 }
 
 .alert-text {
 	white-space: pre;
+}
+
+textarea {
+	width: 100%;
+}
+
+input {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #36454F;
+    font-size: 14px;
+    height: 17px;
+    padding: 3px 6px;
+    width: 100%;
+}
+
+textarea {
+    font: 14px sans-serif;
+    font-family: 'Metrophobic', Arial, serif; font-weight: 400;
+    margin-top: 5px;
+    padding: 3px 6px;
+    width: 100%;
+    color: #36454F;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+}
+
+button {
+    background-color: #FFF;
+    border-radius: 4px;
+    margin-top: 10px;
+    padding: 3px 6px;
+    border: 1px solid #ccc;
+    -webkit-transition: 0.2s ease;
+            transition: 0.2s ease;
+}
+button:hover {
+    background-color: #EFEFEF;
+    -webkit-transition: 0.2s ease;
+            transition: 0.2s ease;
 }

@@ -7,9 +7,9 @@
 		<b class="alert-text">{{ text|safe }}</b>
 	</div>
 	<form action="/login" method="post">
-		<h4>Username:<input type="text" name="username" /></h4>
-		<h4>Password:<input type="password" name="password" /></h4>
-		<input type="submit" value="Submit">
+		<label>Username:<input type="text" name="username" /></label>
+		<label>Password:<input type="password" name="password" /></label>
+		<button type="submit">Submit</button> 
 	</form>
 </div>
 {% endblock %}
