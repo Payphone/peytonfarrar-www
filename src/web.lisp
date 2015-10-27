@@ -31,6 +31,12 @@
 (defun root-directory (directory-path)
   (directory (root-path directory-path)))
 
+(defun of-group (group)
+ (search group (gethash :groups *session*)))
+
+(defun random-file (files)
+  (nth (random (list-length files)) files))
+
 ;;
 ;; Blog post functions
 
@@ -152,30 +158,24 @@
                       (list :posts posts)))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
-  (if (not (search "dev" (gethash :groups *session*)))
-    (throw-code 403)
-    (render (absolute-path "new_post.html")
-            (if (string= |error| "t")
-              (list :text "  Please enter a subject")
-              nil))))
+  (if (of-group "dev")
+    (render (absolute-path "new_post.html"))
+    (throw-code 403)))
 
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
-  (when (search "dev" (gethash :groups *session*))
-    (when (eq (length |subject|) 0)
-      (redirect "/blog/new?error=t"))
-    (unless (eq (length |subject|) 0)
-      (submit-post |subject| (get-universal-time) |content| |tags|)
-      (redirect "/blog/new"))))
+  (when (of-group "dev")
+    (submit-post |subject| (get-universal-time) |content| |tags|)
+    (redirect "/blog/new")))
 
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))
-		(songs (root-directory "static/music/Jazz/*.ogg")))
-	(render (absolute-path "jazz.html")
-  		(list :image (enough-namestring 
-                       (nth (random (list-length images)) images)
+        (songs (root-directory "static/music/Jazz/*.ogg")))
+    (render (absolute-path "jazz.html")
+        (list :image (enough-namestring 
+                       (random-file images)
                        *static-directory*)
-		      :song (enough-namestring 
-                      (nth (random (list-length songs)) songs)
+              :song (enough-namestring 
+                      (random-file songs)
                       *static-directory*)))))
 
 ;;
