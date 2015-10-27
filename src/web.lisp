@@ -121,7 +121,6 @@
     (when (eq current-user nil)
       (redirect "/login?error=t"))  
     (unless (eq current-user nil)
-      (clrhash *session*)
       (setf (gethash :username *session*) |username|)
       (setf (gethash :groups *session*) (user-groups current-user))
       (redirect "/"))))
@@ -167,7 +166,7 @@
       (redirect "/blog/new?error=t"))
     (unless (eq (length |subject|) 0)
       (submit-post |subject| (get-universal-time) |content| |tags|)
-      (redirect "/"))))
+      (redirect "/blog/new"))))
 
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))

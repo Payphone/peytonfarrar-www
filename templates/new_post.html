@@ -1,17 +1,17 @@
 {% extends "layouts/default.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}New Post{% endblock %}
 {% block content %}
 <div class="content">
-	<h2>New Post</h2>
-	<div class="alert-error">
-		<b class="alert-text">{{ text|safe }}</b>
-	</div>
-	<form action="/blog/new" method="post">
-		<input placeholder="Subject" type="text" name="subject" />
-		<textarea placeholname="content" name="content" rows="15" cols="20"></textarea>
-		<input placeholder="Tags" type="text" name="tags" />
-		<button type="submit">Submit</button>
-	</form>
+    <h2>New Post</h2>
+    <div class="alert-error">
+        <b class="alert-text">{{ text|safe }}</b>
+    </div>
+    <form action="/blog/new" method="post">
+    <input placeholder="Subject" type="text" name="subject" />
+        <textarea placeholname="content" name="content" rows="20" cols="20"></textarea>
+        <input placeholder="Tags" type="text" name="tags" />
+        <button type="submit">Submit</button>
+    </form>
 </div>
 {% endblock %}
 
