@@ -22,7 +22,7 @@
 ;(defconfig :common
 ;  `(:databases ((:maindb :sqlite3 :database-name ":memory:"))))
 (defconfig :common
-   `(:databases ((:maindb :postgres :database-name "maindb" :username "freebsd"))))
+   `(:databases ((:maindb :postgres :database-name "maindb" :username "peyton"))))
 
 (defconfig |development|
   '())

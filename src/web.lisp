@@ -101,7 +101,8 @@
       (select :*
         (from :users)
         (where (:and (:= :username username)
-                     (:raw (format nil "password = crypt(\'~A\', password)" password)))))
+                     (:raw (format nil "password = crypt(\'~A\', password)" 
+                                   password)))))
       :as 'user)))
 ;;
 ;; Routing rules
@@ -172,10 +173,12 @@
   (let ((images (root-directory "static/images/Night/*.jpg"))
 		(songs (root-directory "static/music/Jazz/*.ogg")))
 	(render (absolute-path "jazz.html")
-  		(list :image (enough-namestring (nth (random (list-length images)) images)
-                        *static-directory*)
-		      :song (enough-namestring (nth (random (list-length songs)) songs)
-                        *static-directory*)))))
+  		(list :image (enough-namestring 
+                       (nth (random (list-length images)) images)
+                       *static-directory*)
+		      :song (enough-namestring 
+                      (nth (random (list-length songs)) songs)
+                      *static-directory*)))))
 
 ;;
 ;; Error pages
