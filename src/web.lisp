@@ -122,7 +122,7 @@
     (unless (eq current-user nil)
       (setf (gethash :username *session*) |username|)
       (setf (gethash :groups *session*) (user-groups current-user))
-      (redirect "/"))))
+      (redirect "/blog/new"))))
     
 (defroute "/logout" ()
     (clrhash *session*)
