@@ -12,7 +12,6 @@
 
 ;;
 ;; Application
-
 (defclass <web> (<app>) ()) 
 (defvar *web* (make-instance '<web>))
 (clear-routing-rules *web*)
@@ -133,14 +132,14 @@
   (let* ((page (parse-integer (first captures)))
          (posts (list :posts (get-posts 10 :post-offset (* 10 (1- page))))))
     (if (eq (cadr posts) nil)
-      (render (absolute-path "_errors/404.html"))
+      (throw-code 404)
       (render (absolute-path "blog_index.html")
               posts))))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
     (if (eq (post-by-id id) nil)
-      (render #P"_errors/404.html")
+      (throw-code 404)
       (render-post (post-by-id (first captures))))))
 
 (defroute ("/blog/tag/([\\w]+)/([1-9]+)" :regexp :t) (&key captures)
@@ -148,13 +147,13 @@
                  (page (parse-integer (second captures)))
                  (posts (get-posts 10 :post-offset (* 10 (1- page)) :tag tag)))
             (if (eq (car posts) nil)
-              (render (absolute-path "_errors/404.html"))
+              (throw-code 404)
               (render (absolute-path "blog_index.html")
                       (list :posts posts)))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (if (not (search "dev" (gethash :groups *session*)))
-    (render (absolute-path "_errors/nopermissions.html"))
+    (throw-code 403)
     (render (absolute-path "new_post.html")
             (if (string= |error| "t")
               (list :text "  Please enter a subject")
@@ -185,3 +184,7 @@
 (defmethod on-exception ((app <web>) (code (eql 404)))
   (declare (ignore app))
   (absolute-path "_errors/404.html"))
+
+(defmethod on-exception ((app <web>) (code (eql 403)))
+  (declare (ignore app))
+  (absolute-path "_errors/403.html"))
