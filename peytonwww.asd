@@ -14,10 +14,7 @@
                :cl-ppcre
                :uiop
 
-               ;; for @route annotation
-               :cl-syntax-annot
-
-               ;; HTML Template
+               ;; HTML template and markdown
                :djula
 			   :cl-markdown
 

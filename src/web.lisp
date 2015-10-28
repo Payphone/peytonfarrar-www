@@ -12,6 +12,7 @@
 
 ;;
 ;; Application
+
 (defclass <web> (<app>) ()) 
 (defvar *web* (make-instance '<web>))
 (clear-routing-rules *web*)
@@ -82,7 +83,7 @@
                 :content (post-content post)
                 :tags (split-sequence:split-sequence #\Space (post-tags post)))))
 
-(defun submit-post (subject date content tags)
+(defun submit-post (&key subject date content tags)
   (with-connection (db)
     (execute
       (insert-into :posts
@@ -164,7 +165,12 @@
 
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
   (when (of-group "dev")
-    (submit-post |subject| (get-universal-time) |content| |tags|)
+    (submit-post 
+      :subject |subject|
+      :date (get-universal-time) 
+      :content (cl-markdown:render-to-stream 
+                 (cl-markdown:markdown |content|) :html nil)
+      :tags |tags|)
     (redirect "/blog/new")))
 
 (defroute "/jazz" ()
