@@ -28,5 +28,4 @@
                  (:file "view" :depends-on ("config"))
                  (:file "db" :depends-on ("config"))
                  (:file "config"))))
-  :description ""
-  :in-order-to ((test-op (load-op peytonwww-test))))
+  :description "The source code for the website peytonfarrar.com")

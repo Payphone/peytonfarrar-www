@@ -18,31 +18,6 @@
 (clear-routing-rules *web*)
 
 ;;
-;; Helper funtions
-
-(defun absolute-path (file-path)
-  (merge-pathnames file-path *template-directory*))
-
-(defun absolute-directory (directory-path)
-  (directory (absolute-path directory-path))) 
-
-(defun root-path (file-path)
-  (merge-pathnames file-path *application-root*))
-
-(defun root-directory (directory-path)
-  (directory (root-path directory-path)))
-
-(defun of-group (group)
- (search group (gethash :groups *session*)))
-
-(defun random-file (files)
-  (nth (random (list-length files)) files))
-
-(defun markdown-to-html (markdown)
-  (cl-markdown:render-to-stream 
-    (cl-markdown:markdown markdown) :html nil))
-
-;;
 ;; Blog post functions
 
 (defstruct post
@@ -114,6 +89,32 @@
                      (:raw (format nil "password = crypt(\'~A\', password)" 
                                    password)))))
       :as 'user)))
+
+;;
+;; Helper funtions
+
+(defun absolute-path (file-path)
+  (merge-pathnames file-path *template-directory*))
+
+(defun absolute-directory (directory-path)
+  (directory (absolute-path directory-path))) 
+
+(defun root-path (file-path)
+  (merge-pathnames file-path *application-root*))
+
+(defun root-directory (directory-path)
+  (directory (root-path directory-path)))
+
+(defun of-group (group)
+ (search group (gethash :groups *session*)))
+
+(defun random-file (files)
+  (nth (random (list-length files)) files))
+
+(defun markdown-to-html (markdown)
+  (cl-markdown:render-to-stream 
+    (cl-markdown:markdown markdown) :html nil))
+
 ;;
 ;; Routing rules
 
@@ -141,11 +142,13 @@
 
 (defroute ("/blog/page/([1-9]+)" :regexp :t) (&key captures)
   (let* ((page (parse-integer (first captures)))
-         (posts (list :posts (get-posts 10 :post-offset (* 10 (1- page))))))
+         (posts (get-posts 20 :post-offset (* 20 (1- page))))
+         (previous-page (unless (< (1- page) 1) (1- page)))
+         (next-page (when (get-posts 1 :post-offset (* 20 page)) (1+ page))))
     (if (eq (cadr posts) nil)
       (throw-code 404)
       (render (absolute-path "blog_index.html")
-              posts))))
+              (list :posts posts :previous previous-page :next next-page)))))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
@@ -154,13 +157,15 @@
       (render-post (post-by-id (first captures))))))
 
 (defroute ("/blog/tag/([\\w]+)/([1-9]+)" :regexp :t) (&key captures)
-          (let* ((tag (first captures))
-                 (page (parse-integer (second captures)))
-                 (posts (get-posts 10 :post-offset (* 10 (1- page)) :tag tag)))
-            (if (eq (car posts) nil)
-              (throw-code 404)
-              (render (absolute-path "blog_index.html")
-                      (list :posts posts)))))
+  (let* ((tag (first captures))
+         (page (parse-integer (second captures)))
+         (posts (get-posts 20 :post-offset (* 10 (1- page)) :tag tag))
+         (previous-page (unless (< (1- page) 1) (1- page)))
+         (next-page (when (get-posts 1 :post-offset (* 20 page)) (1+ page))))
+    (if (eq (car posts) nil)
+      (throw-code 404)
+      (render (absolute-path "blog_index.html")
+              (list :posts posts :previous previous-page :next next-page)))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (if (of-group "dev")

@@ -6,6 +6,16 @@
 		{% for post in posts %}
 		<li>{{ post.date|date }} >> <a href="/blog/post/{{ post.id }}">{{ post.subject }}</a></li>
 		{% endfor %}		
+
+        {% if previous %}
+        <a href="/blog/page/{{ previous }}"><em>Previous</em></a>
+        {% endif %}
+
+        {% if previous and next %} | {% endif %}
+
+        {% if next %}
+        <a href="/blog/page/{{ next }}"><em>Next</em></a>
+        {% endif %}
 	</ul>
 </div>
 {% endblock %}

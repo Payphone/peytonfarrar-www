@@ -24,15 +24,6 @@
 (defconfig :common
    `(:databases ((:maindb :postgres :database-name "maindb" :username "freebsd"))))
 
-(defconfig |development|
-  '())
-
-(defconfig |production|
-  '())
-
-(defconfig |test|
-  '())
-
 (defun config (&optional key)
   (envy:config #.(package-name *package*) key))
 
