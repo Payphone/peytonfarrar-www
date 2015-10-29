@@ -38,6 +38,10 @@
 (defun random-file (files)
   (nth (random (list-length files)) files))
 
+(defun markdown-to-html (markdown)
+  (cl-markdown:render-to-stream 
+    (cl-markdown:markdown markdown) :html nil))
+
 ;;
 ;; Blog post functions
 
@@ -168,10 +172,9 @@
     (submit-post 
       :subject |subject|
       :date (get-universal-time) 
-      :content (cl-markdown:render-to-stream 
-                 (cl-markdown:markdown |content|) :html nil)
+      :content (markdown-to-html |content|)
       :tags |tags|)
-    (redirect "/blog/new")))
+    (redirect "/")))
 
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))
