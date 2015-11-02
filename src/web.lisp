@@ -45,15 +45,15 @@
 
 (defun get-posts (post-limit &key (post-offset 0) (tag ""))
   (if (< post-offset 0)
-    nil
-    (with-connection (db)
-      (retrieve-all
-        (select :*
-          (from :posts)
-          (offset post-offset)
-          (order-by (:desc :id))
-          (where (:raw (format nil "tags similar to '%((~A))%'" tag)))
-          (limit post-limit))))))
+      nil
+      (with-connection (db)
+        (retrieve-all
+          (select :*
+            (from :posts)
+            (offset post-offset)
+            (order-by (:desc :id))
+            (where (:raw (format nil "tags similar to '%((~A))%'" tag)))
+            (limit post-limit))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
@@ -70,6 +70,15 @@
               :date date
               :content content
               :tags tags)))))
+
+(defun alter-post (id &key subject content tags)
+  (with-connection (db)
+    (execute
+     (update :posts
+       (set= :subject subject
+             :content content
+             :tags tags)
+       (where (:= :id id))))))
 
 ;;
 ;; User functions
@@ -124,8 +133,8 @@
 (defroute ("/login" :method :GET) (&key |error|)
   (render (absolute-path "login.html")
           (if (string= |error| "t")
-            (list :text "  Incorrect username or password")
-            nil)))
+              (list :text "  Incorrect username or password")
+              nil)))
 
 (defroute ("/login" :method :POST) (&key |username| |password|)
   (let ((current-user (get-user |username| |password|)))
@@ -145,16 +154,16 @@
          (posts (get-posts 20 :post-offset (* 20 (1- page))))
          (previous-page (unless (< (1- page) 1) (1- page)))
          (next-page (when (get-posts 1 :post-offset (* 20 page)) (1+ page))))
-    (if (eq (cadr posts) nil)
-      (throw-code 404)
-      (render (absolute-path "blog_index.html")
-              (list :posts posts :previous previous-page :next next-page)))))
+    (if (eq posts nil)
+        (throw-code 404)
+        (render (absolute-path "blog_index.html")
+                (list :posts posts :previous previous-page :next next-page)))))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
     (if (eq (post-by-id id) nil)
-      (throw-code 404)
-      (render-post (post-by-id (first captures))))))
+        (throw-code 404)
+        (render-post (post-by-id id)))))
 
 (defroute ("/blog/tag/([\\w]+)/([1-9]+)" :regexp :t) (&key captures)
   (let* ((tag (first captures))
@@ -163,22 +172,45 @@
          (previous-page (unless (< (1- page) 1) (1- page)))
          (next-page (when (get-posts 1 :post-offset (* 20 page)) (1+ page))))
     (if (eq (car posts) nil)
-      (throw-code 404)
-      (render (absolute-path "blog_index.html")
-              (list :posts posts :previous previous-page :next next-page)))))
+        (throw-code 404)
+        (render (absolute-path "blog_index.html")
+                (list :posts posts :previous previous-page :next next-page)))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (if (of-group "dev")
-    (render (absolute-path "new_post.html"))
-    (throw-code 403)))
+      (render (absolute-path "new_post.html"))
+      (throw-code 403)))
 
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
   (when (of-group "dev")
     (submit-post 
-      :subject |subject|
-      :date (get-universal-time) 
-      :content (markdown-to-html |content|)
-      :tags |tags|)
+     :page "/blog/new"
+     :subject |subject|
+     :date (get-universal-time)
+     :content (markdown-to-html |content|)
+     :tags |tags|)
+    (redirect "/")))
+
+(defroute ("/blog/edit/([\\d]+)" :regexp :t) (&key captures)
+  (let* ((id-string (first captures))
+         (id (parse-integer id-string))
+         (post (post-by-id id)))
+    (unless post (throw-code 404))
+    (if (of-group "dev")
+        (render (absolute-path "new_post.html")
+                (list :page (concatenate 'string "/blog/edit/" id-string)
+                      :subject (post-subject post)
+                      :content (post-content post)
+                      :tags (post-tags post)))
+        (throw-code 403))))
+
+(defroute ("/blog/edit/([\\d]+)" :regexp :t :method :POST)
+    (&key captures |subject| |content| |tags|)
+  (when (of-group "dev")
+    (alter-post (parse-integer (first captures))
+                :subject |subject|
+                :content |content|
+                :tags |tags|)
     (redirect "/")))
 
 (defroute "/jazz" ()
@@ -186,11 +218,11 @@
         (songs (root-directory "static/music/Jazz/*.ogg")))
     (render (absolute-path "jazz.html")
         (list :image (enough-namestring 
-                       (random-file images)
-                       *static-directory*)
+                      (random-file images)
+                      *static-directory*)
               :song (enough-namestring 
-                      (random-file songs)
-                      *static-directory*)))))
+                     (random-file songs)
+                     *static-directory*)))))
 
 ;;
 ;; Error pages
