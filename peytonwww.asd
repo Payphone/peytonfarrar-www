@@ -14,9 +14,8 @@
                :cl-ppcre
                :uiop
 
-               ;; HTML template and markdown
+               ;; HTML template
                :djula
-			   :cl-markdown
 
                ;; for DB
                :datafly

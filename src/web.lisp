@@ -120,10 +120,6 @@
 (defun random-file (files)
   (nth (random (list-length files)) files))
 
-(defun markdown-to-html (markdown)
-  (cl-markdown:render-to-stream 
-    (cl-markdown:markdown markdown) :html nil))
-
 ;;
 ;; Routing rules
 
@@ -187,7 +183,7 @@
      :page "/blog/new"
      :subject |subject|
      :date (get-universal-time)
-     :content (markdown-to-html |content|)
+     :content |content|
      :tags |tags|)
     (redirect "/")))
 
