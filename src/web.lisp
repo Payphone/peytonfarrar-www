@@ -95,8 +95,8 @@
       (select :*
         (from :users)
         (where (:and (:= :username username)
-                     (:raw (format nil "password = crypt(\'~A\', password)" 
-                                   password)))))
+                     (:raw (format nil "password = crypt(\'~S\', password)" 
+                                   (remove #\' password))))))
       :as 'user)))
 
 ;;
