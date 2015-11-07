@@ -1,6 +1,5 @@
 body {
-    font: 16px sans-serif;
-    font-family: 'Metrophobic', Arial, serif; font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif;
     background-color: #EFEFEF;
     height: 100%;
 }
@@ -11,6 +10,12 @@ body {
 
 h2 {
 	font-size: 2em;
+}
+
+h3 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.3em;
+    font-weight: normal;
 }
 
 a {	
@@ -32,7 +37,8 @@ hr {
 }
 
 .header, .header h2 a {
-    font-family: 'Nunito', sans-serif; font-weight: 400;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 400;
 }
 
 .content, .postlist {
@@ -122,7 +128,6 @@ input {
 }
 
 textarea {
-    font: 14px sans-serif;
     font-family: 'Metrophobic', Arial, serif; font-weight: 400;
     margin-top: 5px;
     padding: 3px 6px;

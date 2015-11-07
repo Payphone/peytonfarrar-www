@@ -95,7 +95,7 @@
       (select :*
         (from :users)
         (where (:and (:= :username username)
-                     (:= :password (:crypt password "password")))))
+                     (:= :password (:crypt password :password)))))
       :as 'user)))
 
 ;;
@@ -179,7 +179,6 @@
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
   (when (of-group "dev")
     (submit-post 
-     :page "/blog/new"
      :subject |subject|
      :date (get-universal-time)
      :content |content|

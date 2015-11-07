@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-	<meta name="viewport" content="width=419" />
-	<title>{% block title %}{% endblock %}</title>
-	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
-    <link href="/css/main.css" rel="stylesheet" type="text/css">
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+  <meta name="viewport" content="width=419" />
+  <title>{% block title %}{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400" rel="stylesheet" type="text/css">
+  <link href="/css/main.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<div class="row center header">
-		<h2 class="col c3"><a href="/blog/page/1">Blog</a></h2>
-		<h2 class="col c6"><a href="/">Peyton Farrar</a></h2>
-		<h2 class="col c3"><a href="https://github.com/Peytonien">Github</a></h2>
-    </div>
-	{% block content %} {% endblock %}
+  <div class="row center header">
+    <h2 class="col c3"><a href="/blog/page/1">Blog</a></h2>
+    <h2 class="col c6"><a href="/">Peyton Farrar</a></h2>
+    <h2 class="col c3"><a href="https://github.com/Peytonien">Github</a></h2>
+  </div>
+  {% block content %} {% endblock %}
 </body>
 </html>
