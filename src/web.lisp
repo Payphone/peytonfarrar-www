@@ -75,10 +75,10 @@
   (with-connection (db)
     (execute
      (update :posts
-       (set= :subject subject
-             :content content
-             :tags tags)
-       (where (:= :id id))))))
+             (set= :subject subject
+                   :content content
+                   :tags tags)
+             (where (:= :id id))))))
 
 ;;
 ;; User functions
@@ -95,8 +95,7 @@
       (select :*
         (from :users)
         (where (:and (:= :username username)
-                     (:raw (format nil "password = crypt(\'~S\', password)" 
-                                   (remove #\' password))))))
+                     (:= :password (:crypt password "password")))))
       :as 'user)))
 
 ;;
