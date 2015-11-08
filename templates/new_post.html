@@ -2,7 +2,7 @@
 {% block title %}New Post{% endblock %}
 {% block content %}
 <div class="content">
-    <h2>New Post</h2>
+    <h2>{{ title }}</h2>
     <form action="{{ page }}" method="post">
         <input placeholder="Subject" type="text" name="subject" value="{{ subject }}" required/>
         <textarea placeholname="content" name="content" rows="20" cols="20">{{ content }}</textarea>

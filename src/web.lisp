@@ -173,7 +173,8 @@
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (if (of-group "dev")
-      (render (absolute-path "new_post.html"))
+      (render (absolute-path "new_post.html")
+              (list :title "New Post"))
       (throw-code 403)))
 
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
@@ -192,7 +193,8 @@
     (unless post (throw-code 404))
     (if (of-group "dev")
         (render (absolute-path "new_post.html")
-                (list :page (concatenate 'string "/blog/edit/" id-string)
+                (list :title "Edit Post"
+                      :page (concatenate 'string "/blog/edit/" id-string)
                       :subject (post-subject post)
                       :content (post-content post)
                       :tags (post-tags post)))
