@@ -223,10 +223,14 @@
 ;;
 ;; Error pages
 
-(defmethod on-exception ((app <web>) (code (eql 404)))
-  (declare (ignore app))
-  (render (absolute-path "_errors/404.html")))
+(defparameter *http-error*
+  '((404 . "Not Found")
+    (403 . "Insufficient Permissions")))
 
-(defmethod on-exception ((app <web>) (code (eql 403)))
+(defun error-reason (error-code)
+  (cdr (assoc error-code *http-error*)))
+
+(defmethod on-exception ((app <web>) error-code)
   (declare (ignore app))
-  (render (absolute-path "_errors/403.html")))
+  (render (absolute-path (format nil "error.html"))
+          (list :error-code error-code :error-message (error-reason error-code))))
