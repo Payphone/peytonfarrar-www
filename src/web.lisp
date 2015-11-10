@@ -52,7 +52,7 @@
             (from :posts)
             (offset post-offset)
             (order-by (:desc :id))
-            (where (:like :tags tag))
+            (where (:like :tags (concatenate 'string "%" tag "%")))
             (limit post-limit))))))
 
 (defun render-post (post)
@@ -165,7 +165,7 @@
          (page (parse-integer (second captures)))
          (posts (get-posts 20 :post-offset (* 10 (1- page)) :tag tag))
          (previous-page (unless (< (1- page) 1) (1- page)))
-         (next-page (when (get-posts 1 :post-offset (* 20 page)) (1+ page))))
+         (next-page (when (get-posts 1 :post-offset (* 20 page) :tag tag) (1+ page))))
     (if (eq (car posts) nil)
         (throw-code 404)
         (render (absolute-path "blog_index.html")
