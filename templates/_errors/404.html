@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
-	<title>404</title>
-	<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
-    <link href="/css/main.css" type="text/css" rel="stylesheet">
-</head>
-
-<body>
+{% extends "layouts/noheader.html" %}
+{% block title %}404{% endblock %}
+{% block content %}
 <div class="center">
-	<h2 class="header"><a href="/">HTTP 404</a></h2>
-	<div class="content">Page not found</div>
+  <h2 class="header"><a href="/">HTTP 404</a></h2>
+  <div class="content">Page not found</div>
 </div>
-</body>
-</html>
+{% endblock %}

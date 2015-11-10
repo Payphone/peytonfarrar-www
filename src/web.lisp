@@ -225,8 +225,8 @@
 
 (defmethod on-exception ((app <web>) (code (eql 404)))
   (declare (ignore app))
-  (absolute-path "_errors/404.html"))
+  (render (absolute-path "_errors/404.html")))
 
 (defmethod on-exception ((app <web>) (code (eql 403)))
   (declare (ignore app))
-  (absolute-path "_errors/403.html"))
+  (render (absolute-path "_errors/403.html")))
