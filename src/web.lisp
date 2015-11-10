@@ -52,7 +52,7 @@
             (from :posts)
             (offset post-offset)
             (order-by (:desc :id))
-            (where (:raw (format nil "tags similar to '%((~A))%'" tag)))
+            (where (:like :tags tag))
             (limit post-limit))))))
 
 (defun render-post (post)
