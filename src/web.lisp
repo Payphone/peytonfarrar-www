@@ -43,7 +43,7 @@
         (where (:= :id id)))
       :as 'post)))
 
-(defun get-posts (post-limit &key (post-offset 0) (tag ""))
+(defun get-posts (post-limit &key (post-offset 0) (tag "%"))
   (if (< post-offset 0)
       nil
       (with-connection (db)
