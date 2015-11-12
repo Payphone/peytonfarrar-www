@@ -144,11 +144,28 @@
     (clrhash *session*)
     (redirect "/login"))
 
-(defroute ("/blog/page/([1-9]+)" :regexp :t) (&key captures)
-  (let* ((page (parse-integer (first captures)))
-         (posts (get-posts 20 :post-offset (* 20 (1- page))))
-         (previous-page (unless (< (1- page) 1) (1- page)))
-         (next-page (when (get-posts 1 :post-offset (* 20 page)) (1+ page))))
+
+(defroute ("/blog" :method :GET) (&key (|page| "1") (|tag| ""))
+  (defun format-url (tag page)
+    (if (string= tag "")
+        (format nil "?page=~A" page)
+        (format nil "?page=~A&tag=~A" page tag)))
+  (let* ((page (parse-integer |page|))
+         (number-of-posts 20)
+         (posts-query
+          (get-posts (1+ number-of-posts)
+                     :post-offset (* number-of-posts (1- page))
+                     :tag |tag|))
+         (posts
+          (if (= (length posts-query) (1+ number-of-posts))
+              (butlast posts-query)
+              posts-query))
+         (previous-page
+          (if (> page 1)
+              (format-url |tag| (1- page))))
+         (next-page
+          (if (= (length posts-query) (1+ number-of-posts))
+              (format-url |tag| (1+ page)))))
     (if (null posts)
         (throw-code 404)
         (render (absolute-path "blog_index.html")
@@ -159,17 +176,6 @@
     (if (null (post-by-id id))
         (throw-code 404)
         (render-post (post-by-id id)))))
-
-(defroute ("/blog/tag/([\\w]+)/([1-9]+)" :regexp :t) (&key captures)
-  (let* ((tag (first captures))
-         (page (parse-integer (second captures)))
-         (posts (get-posts 20 :post-offset (* 10 (1- page)) :tag tag))
-         (previous-page (unless (< (1- page) 1) (1- page)))
-         (next-page (when (get-posts 1 :post-offset (* 20 page) :tag tag) (1+ page))))
-    (if (null (car posts))
-        (throw-code 404)
-        (render (absolute-path "blog_index.html")
-                (list :posts posts :previous previous-page :next next-page)))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (if (of-group "dev")

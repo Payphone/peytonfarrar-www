@@ -9,7 +9,7 @@
 		<hr />
 		Tags: 
 		{% for tag in tags %}
-			<a href="/blog/tag/{{ tag }}/1">{{ tag }}</a>
+			<a href="/blog?page=1&tag={{ tag }}">{{ tag }}</a>
 		{% endfor %}
 	{% endifnotequal %}
 </div>
