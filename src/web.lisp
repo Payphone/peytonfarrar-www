@@ -128,8 +128,7 @@
 (defroute ("/login" :method :GET) (&key |error|)
   (render (absolute-path "login.html")
           (if (string= |error| "t")
-              (list :text "  Incorrect username or password")
-              nil)))
+              (list :text "  Incorrect username or password"))))
 
 (defroute ("/login" :method :POST) (&key |username| |password|)
   (let ((current-user (get-user |username| |password|)))
@@ -144,32 +143,28 @@
     (clrhash *session*)
     (redirect "/login"))
 
-
 (defroute ("/blog" :method :GET) (&key (|page| "1") (|tag| ""))
   (defun format-url (tag page)
     (if (string= tag "")
         (format nil "?page=~A" page)
         (format nil "?page=~A&tag=~A" page tag)))
-  (let* ((page (parse-integer |page|))
+
+  (let* ((page (parse-integer |page| :junk-allowed t))
+         (page (if (null page) 0 page))
          (number-of-posts 20)
-         (posts-query
-          (get-posts (1+ number-of-posts)
-                     :post-offset (* number-of-posts (1- page))
-                     :tag |tag|))
-         (posts
-          (if (= (length posts-query) (1+ number-of-posts))
-              (butlast posts-query)
-              posts-query))
-         (previous-page
-          (if (> page 1)
-              (format-url |tag| (1- page))))
-         (next-page
-          (if (= (length posts-query) (1+ number-of-posts))
-              (format-url |tag| (1+ page)))))
-    (if (null posts)
+         (posts-query (get-posts (1+ number-of-posts)
+                                 :post-offset (* number-of-posts (1- page))
+                                 :tag |tag|)))
+    (if (or (null posts-query) (null page))
         (throw-code 404)
         (render (absolute-path "blog_index.html")
-                (list :posts posts :previous previous-page :next next-page)))))
+                (list :posts (if (= (length posts-query) (1+ number-of-posts))
+                                 (butlast posts-query)
+                                 posts-query)
+                      :previous (if (> page 1)
+                                    (format-url |tag| (1- page)))
+                      :next (if (= (length posts-query) (1+ number-of-posts))
+                                (format-url |tag| (1+ page))))))))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
