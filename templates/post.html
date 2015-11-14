@@ -5,8 +5,8 @@
   <h3>{{ subject }}</h3>
   <h3>{{ date|date }}</h3>
   <p>{{ content|safe }}</p>
-  {% ifnotequal tags "nothing" %}
-  <hr />
+  {% ifnotequal tags.first "" %}
+  <hr />       
   Tags: 
   {% for tag in tags %}
   <a href="/blog/tag/{{ tag }}/1">{{ tag }}</a>

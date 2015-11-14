@@ -30,30 +30,30 @@
 (defun latest-post ()
   (with-connection (db)
     (retrieve-one
-      (select :*
-        (from :posts)
-        (order-by (:desc :id)))
-      :as 'post)))
+     (select :*
+       (from :posts)
+       (order-by (:desc :id)))
+     :as 'post)))
 
 (defun post-by-id (id)
   (with-connection (db)
     (retrieve-one
-      (select :*
-        (from :posts)
-        (where (:= :id id)))
-      :as 'post)))
+     (select :*
+       (from :posts)
+       (where (:= :id id)))
+     :as 'post)))
 
 (defun get-posts (post-limit &key (post-offset 0) (tag "%"))
   (if (< post-offset 0)
       nil
       (with-connection (db)
         (retrieve-all
-          (select :*
-            (from :posts)
-            (offset post-offset)
-            (order-by (:desc :id))
-            (where (:like :tags (concatenate 'string "%" tag "%")))
-            (limit post-limit))))))
+         (select :*
+           (from :posts)
+           (offset post-offset)
+           (order-by (:desc :id))
+           (where (:like :tags (concatenate 'string "%" tag "%")))
+           (limit post-limit))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
@@ -65,20 +65,20 @@
 (defun submit-post (&key subject date content tags)
   (with-connection (db)
     (execute
-      (insert-into :posts
-        (set= :subject subject
-              :date date
-              :content content
-              :tags tags)))))
+     (insert-into :posts
+       (set= :subject subject
+             :date date
+             :content content
+             :tags tags)))))
 
 (defun alter-post (id &key subject content tags)
   (with-connection (db)
     (execute
      (update :posts
-             (set= :subject subject
-                   :content content
-                   :tags tags)
-             (where (:= :id id))))))
+       (set= :subject subject
+             :content content
+             :tags tags)
+       (where (:= :id id))))))
 
 (defun post-count (&optional tag)
   (with-connection (db)
@@ -100,11 +100,11 @@
 (defun get-user (username password)
   (with-connection (db)
     (retrieve-one
-      (select :*
-        (from :users)
-        (where (:and (:= :username username)
-                     (:= :password (:crypt password :password)))))
-      :as 'user)))
+     (select :*
+       (from :users)
+       (where (:and (:= :username username)
+                    (:= :password (:crypt password :password)))))
+     :as 'user)))
 
 ;;
 ;; Helper funtions
