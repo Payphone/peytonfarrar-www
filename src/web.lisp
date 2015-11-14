@@ -80,6 +80,14 @@
                    :tags tags)
              (where (:= :id id))))))
 
+(defun post-count (&optional tag)
+  (with-connection (db)
+    (cadr
+     (retrieve-one
+      (select ((:count :*))
+        (from :posts)
+        (where (:like :tags (concatenate 'string "%" tag "%"))))))))
+
 ;;
 ;; User functions
 
@@ -128,7 +136,8 @@
 (defroute ("/login" :method :GET) (&key |error|)
   (render (absolute-path "login.html")
           (if (string= |error| "t")
-              (list :text "  Incorrect username or password"))))
+              (list :text "  Incorrect username or password")
+              nil)))
 
 (defroute ("/login" :method :POST) (&key |username| |password|)
   (let ((current-user (get-user |username| |password|)))
@@ -143,34 +152,34 @@
     (clrhash *session*)
     (redirect "/login"))
 
-(defroute ("/blog" :method :GET) (&key (|page| "1") (|tag| ""))
-  (defun format-url (tag page)
-    (if (string= tag "")
-        (format nil "?page=~A" page)
-        (format nil "?page=~A&tag=~A" page tag)))
-
-  (let* ((page (parse-integer |page| :junk-allowed t))
-         (page (if (null page) 0 page))
-         (number-of-posts 20)
-         (posts-query (get-posts (1+ number-of-posts)
-                                 :post-offset (* number-of-posts (1- page))
-                                 :tag |tag|)))
-    (if (or (null posts-query) (null page))
-        (throw-code 404)
-        (render (absolute-path "blog_index.html")
-                (list :posts (if (= (length posts-query) (1+ number-of-posts))
-                                 (butlast posts-query)
-                                 posts-query)
-                      :previous (if (> page 1)
-                                    (format-url |tag| (1- page)))
-                      :next (if (= (length posts-query) (1+ number-of-posts))
-                                (format-url |tag| (1+ page))))))))
-
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let ((id (parse-integer (first captures))))
     (if (null (post-by-id id))
         (throw-code 404)
         (render-post (post-by-id id)))))
+
+(defroute ("/blog/([1-9]+)" :regexp :t) (&key captures)
+  (let* ((page (parse-integer (first captures)))
+         (limit 20)
+         (posts (get-posts limit :post-offset (* limit (1- page)))))
+    (if (null posts)
+        (throw-code 404)
+        (render (absolute-path "blog_index.html")
+                (list :posts posts
+                      :previous (if (> page 1) (1- page))
+                      :next (if (<= (* limit page) (post-count)) (1+ page)))))))
+
+(defroute ("/blog/tag/([\\w]+)/([\\d]+)" :regexp :t) (&key captures)
+  (let* ((tag (first captures))
+         (page (parse-integer (second captures)))
+         (limit 20)
+         (posts (get-posts limit :post-offset (* limit (1- page)) :tag tag)))
+    (if (null posts)
+        (throw-code 404)
+        (render (absolute-path "blog_index.html")
+                (list :posts posts
+                      :previous (if (> page 1) (1- page))
+                      :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (if (of-group "dev")
