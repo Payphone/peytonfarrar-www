@@ -1,15 +1,15 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
     background-color: #EFEFEF;
     height: 100%;
 }
 
 .dark {
-	background-color: #1A1A1A;
+    background-color: #1A1A1A;
 }
 
 h2 {
-	font-size: 2em;
+    font-size: 2em;
 }
 
 h3 {
@@ -22,12 +22,12 @@ a {
     color: #2C82C9;
     text-decoration: none;
     -webkit-transition: 0.2s ease;
-            transition: 0.2s ease;
+    transition: 0.2s ease;
 }
 a:hover {
     color: #36454F;
     -webkit-transition: 0.2s ease;
-            transition: 0.2s ease;
+    transition: 0.2s ease;
 }
 
 hr {
@@ -51,13 +51,13 @@ hr {
 }
 
 @media only screen and (max-width: 500px) {
-	.content, .postlist {
+    .content, .postlist {
         position: relative;
         margin: 1% 5%; 
         width: 90%;
         color: #000;
         line-height: 25px;
-	}
+    }
 }
 
 .largeImage {
@@ -94,7 +94,7 @@ ul {
 }
 
 code {
-    font-family: 'Metrophobic', Arial, serif; font-weight: 400;
+    font-family: Helvetica, sans-serif;
     color: #FFF;
     background-color: #36454F;
     border-radius: 3px;
@@ -128,7 +128,7 @@ input {
 }
 
 textarea {
-    font-family: 'Metrophobic', Arial, serif; font-weight: 400;
+    font-family: Helvetica, sans-serif; 
     margin-top: 5px;
     padding: 3px 6px;
     width: 100%;
@@ -145,10 +145,10 @@ button {
     padding: 3px 6px;
     border: 1px solid #ccc;
     -webkit-transition: 0.2s ease;
-            transition: 0.2s ease;
+    transition: 0.2s ease;
 }
 button:hover {
     background-color: #EFEFEF;
     -webkit-transition: 0.2s ease;
-            transition: 0.2s ease;
+    transition: 0.2s ease;
 }
