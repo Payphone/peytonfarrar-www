@@ -121,11 +121,14 @@
 (defun root-directory (directory-path)
   (directory (root-path directory-path)))
 
-(defun of-group (group)
- (search group (gethash :groups *session*)))
-
 (defun random-file (files)
   (nth (random (list-length files)) files))
+
+(defmacro with-group (group &rest body)
+  `(if (not (search ,group (gethash :groups *session*)))
+       (throw-code 403)
+       (progn
+         ,@body)))
 
 ;;
 ;; Routing rules
@@ -182,13 +185,12 @@
                       :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
-  (if (of-group "dev")
-      (render (absolute-path "new_post.html")
-              (list :title "New Post"))
-      (throw-code 403)))
+  (with-group "dev"
+    (render (absolute-path "new_post.html")
+            (list :title "New Post"))))
 
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
-  (when (of-group "dev")
+  (with-group "dev"
     (submit-post 
      :subject |subject|
      :date (get-universal-time)
@@ -201,18 +203,17 @@
          (id (parse-integer id-string))
          (post (post-by-id id)))
     (unless post (throw-code 404))
-    (if (of-group "dev")
-        (render (absolute-path "new_post.html")
-                (list :title "Edit Post"
-                      :page (concatenate 'string "/blog/edit/" id-string)
-                      :subject (post-subject post)
-                      :content (post-content post)
-                      :tags (post-tags post)))
-        (throw-code 403))))
+    (with-group "dev"
+      (render (absolute-path "new_post.html")
+              (list :title "Edit Post"
+                    :page (concatenate 'string "/blog/edit/" id-string)
+                    :subject (post-subject post)
+                    :content (post-content post)
+                    :tags (post-tags post))))))
 
 (defroute ("/blog/edit/([\\d]+)" :regexp :t :method :POST)
     (&key captures |subject| |content| |tags|)
-  (when (of-group "dev")
+  (with-group "dev"
     (alter-post (parse-integer (first captures))
                 :subject |subject|
                 :content |content|
@@ -223,12 +224,12 @@
   (let ((images (root-directory "static/images/Night/*.jpg"))
         (songs (root-directory "static/music/Jazz/*.ogg")))
     (render (absolute-path "jazz.html")
-        (list :image (enough-namestring 
-                      (random-file images)
-                      *static-directory*)
-              :song (enough-namestring 
-                     (random-file songs)
-                     *static-directory*)))))
+            (list :image (enough-namestring 
+                          (random-file images)
+                          *static-directory*)
+                  :song (enough-namestring 
+                         (random-file songs)
+                         *static-directory*)))))
 
 ;;
 ;; Error pages
