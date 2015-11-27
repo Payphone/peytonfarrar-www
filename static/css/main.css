@@ -115,10 +115,6 @@ code {
     white-space: pre;
 }
 
-textarea {
-    width: 100%;
-}
-
 input {
     border: 1px solid #ccc;
     border-radius: 4px;
