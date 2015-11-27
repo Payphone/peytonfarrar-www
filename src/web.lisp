@@ -130,6 +130,12 @@
        (progn
          ,@body)))
 
+(defmacro with-item (item &rest body)
+  `(if (null ,item)
+       (throw-code 404)
+       (progn
+         ,@body)))
+
 ;;
 ;; Routing rules
 
@@ -139,50 +145,47 @@
 (defroute ("/login" :method :GET) (&key |error|)
   (render (absolute-path "login.html")
           (if (string= |error| "t")
-              (list :text "  Incorrect username or password")
-              nil)))
+              (list :text "  Incorrect username or password"))))
 
 (defroute ("/login" :method :POST) (&key |username| |password|)
   (let ((current-user (get-user |username| |password|)))
     (when (null current-user)
-      (redirect "/login?error=t"))  
+      (redirect "?error=t"))  
     (unless (null current-user)
       (setf (gethash :username *session*) |username|)
       (setf (gethash :groups *session*) (user-groups current-user))
       (redirect "/blog/new"))))
     
 (defroute "/logout" ()
-    (clrhash *session*)
-    (redirect "/login"))
+  (clrhash *session*)
+  (redirect "/login"))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
-  (let ((id (parse-integer (first captures))))
-    (if (null (post-by-id id))
-        (throw-code 404)
-        (render-post (post-by-id id)))))
+  (let* ((id (parse-integer (first captures)))
+         (post (post-by-id id)))
+    (with-item post
+      (render-post post))))
 
 (defroute ("/blog/([1-9]+)" :regexp :t) (&key captures)
   (let* ((page (parse-integer (first captures)))
          (limit 20)
          (posts (get-posts limit :post-offset (* limit (1- page)))))
-    (if (null posts)
-        (throw-code 404)
-        (render (absolute-path "blog_index.html")
-                (list :posts posts
-                      :previous (if (> page 1) (1- page))
-                      :next (if (<= (* limit page) (post-count)) (1+ page)))))))
+    (with-item posts
+      (render (absolute-path "blog_index.html")
+              (list :posts posts
+                    :previous (if (> page 1) (1- page))
+                    :next (if (<= (* limit page) (post-count)) (1+ page)))))))
 
 (defroute ("/blog/tag/([\\w]+)/([\\d]+)" :regexp :t) (&key captures)
   (let* ((tag (first captures))
          (page (parse-integer (second captures)))
          (limit 20)
          (posts (get-posts limit :post-offset (* limit (1- page)) :tag tag)))
-    (if (null posts)
-        (throw-code 404)
-        (render (absolute-path "blog_index.html")
-                (list :posts posts
-                      :previous (if (> page 1) (1- page))
-                      :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
+    (with-item posts
+      (render (absolute-path "blog_index.html")
+              (list :posts posts
+                    :previous (if (> page 1) (1- page))
+                    :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (with-group "dev"
@@ -202,23 +205,24 @@
   (let* ((id-string (first captures))
          (id (parse-integer id-string))
          (post (post-by-id id)))
-    (unless post (throw-code 404))
-    (with-group "dev"
-      (render (absolute-path "new_post.html")
-              (list :title "Edit Post"
-                    :page (concatenate 'string "/blog/edit/" id-string)
-                    :subject (post-subject post)
-                    :content (post-content post)
-                    :tags (post-tags post))))))
+    (with-item post
+      (with-group "dev"
+        (render (absolute-path "new_post.html")
+                (list :title "Edit Post"
+                      :page (concatenate 'string "/blog/edit/" id-string)
+                      :subject (post-subject post)
+                      :content (post-content post)
+                      :tags (post-tags post)))))))
 
 (defroute ("/blog/edit/([\\d]+)" :regexp :t :method :POST)
     (&key captures |subject| |content| |tags|)
-  (with-group "dev"
-    (alter-post (parse-integer (first captures))
-                :subject |subject|
-                :content |content|
-                :tags |tags|)
-    (redirect "/")))
+  (let ((id (parse-integer (first captures))))
+    (with-group "dev"
+      (alter-post id
+                  :subject |subject|
+                  :content |content|
+                  :tags |tags|)
+      (redirect "/"))))
 
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))
