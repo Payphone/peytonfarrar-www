@@ -27,21 +27,21 @@
   content
   tags)
 
+(defmacro retrieve-post (&rest body)
+  `(with-connection (db)
+     (retrieve-one
+      (select :*
+              (from :posts)
+              ,@body)
+      :as 'post)))
+
 (defun latest-post ()
-  (with-connection (db)
-    (retrieve-one
-     (select :*
-       (from :posts)
-       (order-by (:desc :id)))
-     :as 'post)))
+  (retrieve-post
+   (order-by (:desc :id))))
 
 (defun post-by-id (id)
-  (with-connection (db)
-    (retrieve-one
-     (select :*
-       (from :posts)
-       (where (:= :id id)))
-     :as 'post)))
+  (retrieve-post
+   (where (:= id id))))
 
 (defun get-posts (post-limit &key (post-offset 0) (tag "%"))
   (if (< post-offset 0)
@@ -49,11 +49,11 @@
       (with-connection (db)
         (retrieve-all
          (select :*
-           (from :posts)
-           (offset post-offset)
-           (order-by (:desc :id))
-           (where (:like :tags (concatenate 'string "%" tag "%")))
-           (limit post-limit))))))
+                 (from :posts)
+                 (offset post-offset)
+                 (order-by (:desc :id))
+                 (where (:like :tags (concatenate 'string "%" tag "%")))
+                 (limit post-limit))))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
