@@ -27,7 +27,7 @@
   content
   tags)
 
-(defmacro retrieve-post (&rest body)
+(defmacro retrieve-post (&body body)
   `(with-connection (db)
      (retrieve-one
       (select :*
@@ -124,13 +124,13 @@
 (defun random-file (files)
   (nth (random (list-length files)) files))
 
-(defmacro with-group (group &rest body)
+(defmacro with-group (group &body body)
   `(if (not (search ,group (gethash :groups *session*)))
        (throw-code 403)
        (progn
          ,@body)))
 
-(defmacro with-item (item &rest body)
+(defmacro with-item (item &body body)
   `(if (null ,item)
        (throw-code 404)
        (progn
