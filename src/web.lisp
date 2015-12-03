@@ -31,8 +31,8 @@
   `(with-connection (db)
      (retrieve-one
       (select :*
-              (from :posts)
-              ,@body)
+        (from :posts)
+        ,@body)
       :as 'post)))
 
 (defun latest-post ()
@@ -41,7 +41,7 @@
 
 (defun post-by-id (id)
   (retrieve-post
-   (where (:= id id))))
+    (where (:= :id id))))
 
 (defun get-posts (post-limit &key (post-offset 0) (tag "%"))
   (if (< post-offset 0)
@@ -101,9 +101,9 @@
   (with-connection (db)
     (retrieve-one
      (select :*
-       (from :users)
-       (where (:and (:= :username username)
-                    (:= :password (:crypt password :password)))))
+             (from :users)
+             (where (:and (:= :username username)
+                          (:= :password (:crypt password :password)))))
      :as 'user)))
 
 ;;
@@ -234,7 +234,6 @@
                   :song (enough-namestring 
                          (random-file songs)
                          *static-directory*)))))
-
 ;;
 ;; Error pages
 
