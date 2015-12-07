@@ -10,25 +10,25 @@
 (defun daily-today ()
   (labels ((lst ()
              (get-daily
-               (order-by (:asc :id))
-               (where (:<= (:- (round (/ (get-universal-time) 60 60))
-                               (:/ :date 60 60))
-                           24)))))
+              (order-by (:asc :id))
+              (where (:<= (:- (round (/ (get-universal-time) 60 60))
+                              (:/ :date 60 60))
+                          24)))))
     (let ((daily-list (lst)))
       (if (null daily-list)
-          "Nothing"
+          nil
           daily-list))))
 
 (defun daily-week ()
   (labels ((lst ()
              (get-daily
-               (order-by (:desc :id))
-               (where (:<= (:- (round (/ (get-universal-time) 60 60 24))
-                               (:/ :date 60 60 24))
-                           7)))))
+              (order-by (:desc :id))
+              (where (:<= (:- (round (/ (get-universal-time) 60 60 24))
+                              (:/ :date 60 60 24))
+                          7)))))
     (let ((weekly-list (lst)))
       (if (null weekly-list)
-          "Nothing"
+          nil
           weekly-list))))
 
 (defun submit-daily (&key title time tags)
