@@ -45,3 +45,15 @@
   (render (absolute-path "daily.html")
           (list :dailies (daily-today)
                 :week (daily-week))))
+
+(defroute ("/daily/new" :method :GET) ()
+  (with-group "dev"
+    (render (absolute-path "new_daily.html"))))
+
+(defroute ("/daily/new" :method :POST) (&key |title| |time| |tags|)
+  (with-group "dev"
+    (submit-daily :title |title|
+                  :time  |time|
+                  :tags  |tags|)
+    (redirect "/daily/new")))
+

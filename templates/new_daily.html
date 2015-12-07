@@ -1,0 +1,13 @@
+{% extends "layouts/default.html" %}
+{% block title %}New Post{% endblock %}
+{% block content %}
+<div class="content">
+  <h2>New Daily<h2>
+  <form action="/daily/new" method="post">
+    <input placeholder="Title" type="text" style="width:45%;" name="title" required/>
+    <input placeholder="Time" style="width:6%;" name="time" required/>
+    <input placeholder="Tags" type="text" style="width:35%;" name="tags"/>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+{% endblock %}
