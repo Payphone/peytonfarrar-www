@@ -60,6 +60,11 @@ hr {
         color: #000;
         line-height: 25px;
     }
+    .cols {
+        float: none;
+        min-height: 1px;
+        margin-left: 25%;
+    }
 }
 
 .largeImage {
@@ -81,18 +86,21 @@ ul {
     margin: 1% 0px;
     overflow: hidden;
 }
-
-.col {
+.col, .cols {
     float: left;
     min-height: 1px;
 }
-
 .c6 {
-    width:50%
+    width:50%;
 }
-
+.c4 {
+    width:37.5%;
+}
 .c3 {
     width: 25%;
+}
+.c2 {
+    width: 12.5%;
 }
 
 code {

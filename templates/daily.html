@@ -1,0 +1,22 @@
+{% extends "layouts/default.html" %}
+{% block title %}Daily{% endblock %}
+{% block content %}
+<div class="center row">
+  <div class="cols c6">
+    <h2>Today</h2>
+    <ul> 
+      {% for daily in dailies %}
+        <li>{{ daily.title }} for {{ daily.time }} minutes</li>
+      {% endfor %}		
+    </ul>
+  </div>
+  <div class="cols c6">
+    <h2>This Week</h2>
+      <ul>
+        {% for daily in week %}
+          <li>{{ daily.title}} for {{ daily.time }} minutes</li>
+        {% endfor %}
+      </ul>
+  </div>
+</div>
+{% endblock %}
