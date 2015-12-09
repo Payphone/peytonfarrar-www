@@ -1,5 +1,10 @@
 (in-package :peytonwww.web)
 
+(defmacro with-universal-time (&body body)
+  `(multiple-value-bind (second minute hour date month year dow dst-p tz)
+       (get-decoded-time)
+     ,@body))
+
 (defmacro get-daily (&body body)
   `(with-connection (db)
      (retrieve-all
@@ -36,7 +41,9 @@
     (execute
      (insert-into :daily
        (set= :title title
-             :date (get-universal-time)
+             :date (with-universal-time
+                     (declare (ignore second minute hour dow dst-p))
+                     (encode-universal-time 0 0 0 date month year tz))
              :time time
              :tags tags
              :username (gethash :username *session*))))))
