@@ -5,6 +5,13 @@
        (get-decoded-time)
      ,@body))
 
+(defun get-universal-hours ()
+  (round (/ (get-universal-time) 60 60)))
+
+(with-universal-time
+  (declare (ignore second minute hour dst-p))
+  (encode-universal-time 0 0 0 (- date dow) month year tz))
+
 (defmacro get-daily (&body body)
   `(with-connection (db)
      (retrieve-all
@@ -13,28 +20,22 @@
         ,@body))))
 
 (defun daily-today ()
-  (labels ((lst ()
-             (get-daily
-              (order-by (:asc :id))
-              (where (:<= (:- (round (/ (get-universal-time) 60 60))
-                              (:/ :date 60 60))
-                          24)))))
-    (let ((daily-list (lst)))
-      (if (null daily-list)
-          nil
-          daily-list))))
+  (get-daily
+    (order-by (:desc :id))
+    (where (:<= (:- (get-universal-hours)
+                    (:/ :date 60 60))
+                24))))
 
 (defun daily-week ()
-  (labels ((lst ()
-             (get-daily
-              (order-by (:desc :id))
-              (where (:<= (:- (round (/ (get-universal-time) 60 60 24))
-                              (:/ :date 60 60 24))
-                          7)))))
-    (let ((weekly-list (lst)))
-      (if (null weekly-list)
-          nil
-          weekly-list))))
+  (let ((monday-date
+         (with-universal-time
+           (declare (ignore second minute hour dst-p))
+           (encode-universal-time 0 0 0 (- date dow) month year tz))))
+    (get-daily
+      (order-by (:desc :id))
+      (where (:<= (:- (:/ :date 60 60 24)
+                      monday-date)
+                  7)))))
 
 (defun submit-daily (&key title time tags)
   (with-connection (db)
@@ -63,4 +64,3 @@
                   :time  |time|
                   :tags  |tags|)
     (redirect "/daily/new")))
-
