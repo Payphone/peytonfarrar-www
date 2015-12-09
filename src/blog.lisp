@@ -81,13 +81,15 @@
   groups)
 
 (defun get-user (username password)
-  (with-connection (db)
-    (retrieve-one
-     (select :*
-       (from :users)
-       (where (:and (:= :username username)
-                    (:= :password (:crypt password :password)))))
-     :as 'user)))
+  (if (or (null username) (null password))
+      nil
+      (with-connection (db)
+        (retrieve-one
+         (select :*
+           (from :users)
+           (where (:and (:= :username username)
+                        (:= :password (:crypt password :password)))))
+         :as 'user))))
 
 ;;
 ;; Routing Rules
