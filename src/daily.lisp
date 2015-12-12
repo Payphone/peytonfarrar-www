@@ -1,5 +1,8 @@
 (in-package :peytonwww.web)
 
+;;
+;; Time Functions
+
 (defmacro with-universal-time (&body body)
   `(multiple-value-bind (second minute hour date month year dow dst-p tz)
        (get-decoded-time)
@@ -18,7 +21,10 @@
 (defun get-universal-hours ()
   (round (/ (get-universal-time) 60 60)))
 
-(defstruct daily
+;;
+;; Daily Functions
+
+(defstruct daily 
   id
   title
   time
@@ -26,25 +32,22 @@
   tags
   username)
 
-(defun add-daily (daily n)
-  (setf (daily-time daily) (+ (daily-time daily) n)))
-
-(defun daily= (d1 d2)
+(defun daily-title= (d1 d2)
   (if (or (null d1) (null d2))
       nil
       (string= (daily-title d1) (daily-title d2))))
 
-(defun export-daily (d1)
-  (list :title (daily-title d1) :time (daily-time d1)))
+(defun export-daily (d)
+  (list :title (daily-title d) :time (daily-time d)))
 
-(defun c-daily (daily-lst)
+(defun condense-daily (daily-lst)
   (defparameter clst nil)
   (do* ((lst daily-lst (cdr lst))
         (d1 nil (first lst))
-        (d2 nil (find-if #'(lambda (x) (daily= d1 x)) clst)))
+        (d2 nil (find-if #'(lambda (x) (daily-title= d1 x)) clst)))
        ((null lst) clst)
     (cond ((null d2) (push (car lst) clst))
-          ((daily= d1 d2) (setf (daily-time d2) (+ (daily-time d1) (daily-time d2))))
+          ((daily-title= d1 d2) (incf (daily-time d2) (daily-time d1)))
           (t (push d1 clst)))))
 
 (defmacro get-daily (&body body)
@@ -70,19 +73,24 @@
                 7))))
 
 (defun submit-daily (&key title time tags)
-  (with-connection (db)
-    (execute
-     (insert-into :daily
-                  (set= :title title
-                        :date (get-current-day) 
-                        :time time
-                        :tags tags
-                        :username "peyton")))));(gethash :username *session*))))))
+  (if (or (null title) (null time) (null tags))
+      nil
+      (with-connection (db)
+        (execute
+         (insert-into :daily
+           (set= :title title
+                 :date (get-current-day) 
+                 :time time
+                 :tags tags
+                 :username (gethash :username *session*)))))))
+
+;;
+;; Routes
 
 (defroute "/daily" ()
   (render (absolute-path "daily.html")
           (list :dailies (mapcar #'export-daily (daily-today))
-                :week (mapcar #'export-daily (c-daily (daily-week))))))
+                :week (mapcar #'export-daily (condense-daily (daily-week))))))
 
 (defroute ("/daily/new" :method :GET) ()
   (with-group "dev"
