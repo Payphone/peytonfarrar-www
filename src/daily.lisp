@@ -81,7 +81,7 @@
 
 (defroute "/daily" ()
   (render (absolute-path "daily.html")
-          (list :dailies (export-daily (daily-today))
+          (list :dailies (mapcar #'export-daily (daily-today))
                 :week (mapcar #'export-daily (c-daily (daily-week))))))
 
 (defroute ("/daily/new" :method :GET) ()
