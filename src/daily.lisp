@@ -19,8 +19,12 @@
   (round (/ (get-universal-time) 60 60)))
 
 (defstruct daily
+  id
   title
-  time)
+  time
+  date
+  tags
+  username)
 
 (defun add-daily (daily n)
   (setf (daily-time daily) (+ (daily-time daily) n)))
@@ -46,7 +50,7 @@
 (defmacro get-daily (&body body)
   `(with-connection (db)
      (retrieve-all
-      (select (:title :time)
+      (select :*
         (from :daily)
         ,@body)
       :as 'daily)))
