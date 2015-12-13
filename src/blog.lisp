@@ -10,7 +10,7 @@
   content
   tags)
 
-(defmacro retrieve-post (&body body)
+(defmacro get-post (&body body)
   `(with-connection (db)
      (retrieve-one
       (select :*
@@ -18,25 +18,13 @@
         ,@body)
       :as 'post)))
 
-(defun latest-post ()
-  (retrieve-post
-   (order-by (:desc :id))))
-
-(defun post-by-id (id)
-  (retrieve-post
-   (where (:= :id id))))
-
-(defun get-posts (post-limit &key (post-offset 0) (tag "%"))
-  (if (< post-offset 0)
-      nil
-      (with-connection (db)
-        (retrieve-all
-         (select :*
-                 (from :posts)
-                 (offset post-offset)
-                 (order-by (:desc :id))
-                 (where (:like :tags (concatenate 'string "%" tag "%")))
-                 (limit post-limit))))))
+(defmacro get-posts (&body body)
+  `(with-connection (db)
+     (retrieve-all
+      (select :*
+        (from :posts)
+        (order-by (:desc :id))
+        ,@body))))
 
 (defun render-post (post)
   (render (absolute-path "post.html")
@@ -44,6 +32,14 @@
                 :date (post-date post)
                 :content (post-content post)
                 :tags (split-sequence:split-sequence #\Space (post-tags post)))))
+
+(defun latest-post ()
+  (get-post
+   (order-by (:desc :id))))
+
+(defun post-by-id (id)
+  (get-post
+   (where (:= :id id))))
 
 (defun submit-post (&key subject date content tags)
   (with-connection (db)
@@ -102,7 +98,7 @@
 (defroute ("/login" :method :POST) (&key |username| |password|)
   (let ((current-user (get-user |username| |password|)))
     (when (null current-user)
-      (redirect "?error=t"))  
+      (redirect "?error=t"))
     (unless (null current-user)
       (setf (gethash :username *session*) |username|)
       (setf (gethash :groups *session*) (user-groups current-user))
@@ -121,7 +117,7 @@
 (defroute ("/blog/([1-9]+)" :regexp :t) (&key captures)
   (let* ((page (parse-integer (first captures)))
          (limit 20)
-         (posts (get-posts limit :post-offset (* limit (1- page)))))
+         (posts (get-posts (limit limit) (offset (* limit (1- page))))))
     (with-item posts
       (render (absolute-path "blog_index.html")
               (list :posts posts
@@ -132,7 +128,9 @@
   (let* ((tag (first captures))
          (page (parse-integer (second captures)))
          (limit 20)
-         (posts (get-posts limit :post-offset (* limit (1- page)) :tag tag)))
+         (posts (get-posts (limit limit)
+                           (offset (* limit (1- page)))
+                           (where (:like :tags (concatenate 'string "%" tag "%"))))))
     (with-item posts
       (render (absolute-path "blog_index.html")
               (list :posts posts

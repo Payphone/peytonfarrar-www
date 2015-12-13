@@ -22,7 +22,7 @@
   (round (/ (get-universal-time) 60 60)))
 
 ;;
-;; Daily Functions
+;; Daily Helper Functions
 
 (defstruct daily 
   id
@@ -50,6 +50,9 @@
           ((daily-title= d1 d2) (incf (daily-time d2) (daily-time d1)))
           (t (push d1 clst)))))
 
+;;
+;; Database calls
+
 (defmacro get-daily (&body body)
   `(with-connection (db)
      (retrieve-all
@@ -66,7 +69,7 @@
                 24))))
 
 (defun daily-week ()
-  (get-daily 
+  (get-daily
     (order-by (:desc :id))
     (where (:<= (:- (:/ :date 60 60 24)
                     (get-current-week))
@@ -79,7 +82,7 @@
         (execute
          (insert-into :daily
            (set= :title title
-                 :date (get-current-day) 
+                 :date (get-current-day)
                  :time time
                  :tags tags
                  :username (gethash :username *session*)))))))

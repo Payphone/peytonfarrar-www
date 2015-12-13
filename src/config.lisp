@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage peytonwww.config
-  (:use :cl)
+(:use :cl)
   (:import-from :envy
                 :config-env-var
                 :defconfig)
