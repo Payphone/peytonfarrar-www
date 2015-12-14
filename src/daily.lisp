@@ -70,8 +70,8 @@
 (defun daily-week ()
   (get-daily
     (order-by (:desc :id))
-    (where (:<= (:- (:/ :date 60 60 24)
-                    (get-current-week))
+    (where (:<= (:- (get-current-week)
+                    (:/ :date 60 60 24))
                 7))))
 
 (defun submit-daily (&key title time tags)
