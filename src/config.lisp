@@ -20,7 +20,7 @@
 (defparameter *template-directory* (merge-pathnames #P"templates/" *application-root*))
 
 (defconfig :common
-   `(:databases ((:maindb :postgres :database-name "maindb" :username "peyton"))))
+   `(:databases ((:maindb :postgres :database-name "maindb" :username "freebsd"))))
 
 (defun config (&optional key)
   (envy:config #.(package-name *package*) key))
