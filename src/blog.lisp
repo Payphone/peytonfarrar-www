@@ -26,13 +26,6 @@
         (order-by (:desc :id))
         ,@body))))
 
-(defun render-post (post)
-  (render (absolute-path "post.html")
-          (list :subject (post-subject post)
-                :date (post-date post)
-                :content (post-content post)
-                :tags (split-sequence:split-sequence #\Space (post-tags post)))))
-
 (defun latest-post ()
   (get-post
    (order-by (:desc :id))))
@@ -66,6 +59,13 @@
       (select ((:count :*))
               (from :posts)
               (where (:like :tags (concatenate 'string "%" tag "%"))))))))
+
+(defun render-post (post)
+  (render (absolute-path "post.html")
+          (list :subject (post-subject post)
+                :date (post-date post)
+                :content (post-content post)
+                :tags (split-sequence:split-sequence #\Space (post-tags post)))))
 
 ;;
 ;; User functions

@@ -36,16 +36,14 @@
   (nth (random (list-length files)) files))
 
 (defmacro with-group (group &body body)
-  `(if (not (search ,group (gethash :groups *session*)))
-       (throw-code 403)
-       (progn
-         ,@body)))
+  `(if (search ,group (gethash :groups *session*))
+       (progn ,@body)
+       (throw-code 403)))
 
 (defmacro with-item (item &body body)
-  `(if (null ,item)
-       (throw-code 404)
-       (progn
-         ,@body)))
+  `(if ,item
+       (progn ,@body)
+       (throw-code 404)))
 
 ;;
 ;; Routing rules

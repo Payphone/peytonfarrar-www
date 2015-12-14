@@ -33,8 +33,7 @@
   username)
 
 (defun daily-title= (d1 d2)
-  (if (or (null d1) (null d2))
-      nil
+  (if (and d1 d2)
       (string= (daily-title d1) (daily-title d2))))
 
 (defun export-daily (d)
@@ -76,8 +75,7 @@
                 7))))
 
 (defun submit-daily (&key title time tags)
-  (if (or (null title) (null time) (null tags))
-      nil
+  (if (and title time tags)
       (with-connection (db)
         (execute
          (insert-into :daily

@@ -19,10 +19,8 @@
 (defparameter *static-directory*   (merge-pathnames #P"static/" *application-root*))
 (defparameter *template-directory* (merge-pathnames #P"templates/" *application-root*))
 
-;(defconfig :common
-;  `(:databases ((:maindb :sqlite3 :database-name ":memory:"))))
 (defconfig :common
-   `(:databases ((:maindb :postgres :database-name "maindb" :username "freebsd"))))
+   `(:databases ((:maindb :postgres :database-name "maindb" :username "peyton"))))
 
 (defun config (&optional key)
   (envy:config #.(package-name *package*) key))
