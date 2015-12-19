@@ -52,7 +52,7 @@
 ;;
 ;; Database calls
 
-(defmacro get-daily (&body body)
+(defmacro get-dailies (&body body)
   `(with-connection (db)
      (retrieve-all
       (select :*
@@ -60,15 +60,15 @@
         ,@body)
       :as 'daily)))
 
-(defun daily-today ()
-  (get-daily
+(defun dailies-today ()
+  (get-dailies
     (order-by (:desc :id))
     (where (:<= (:- (get-universal-hours)
                     (:/ :date 60 60))
                 24))))
 
-(defun daily-week ()
-  (get-daily
+(defun dailies-week ()
+  (get-dailies
     (order-by (:desc :id))
     (where (:>= (:- (:/ :date 60 60 24)
                     (round (/ (get-current-week) 60 60 24)))
@@ -90,8 +90,8 @@
 
 (defroute "/daily" ()
   (render (absolute-path "daily.html")
-          (list :dailies (mapcar #'export-daily (daily-today))
-                :week (mapcar #'export-daily (condense-daily (daily-week))))))
+          (list :dailies (mapcar #'export-daily (dailies-today))
+                :week (mapcar #'export-daily (condense-daily (dailies-week))))))
 
 (defroute ("/daily/new" :method :GET) ()
   (with-group "dev"

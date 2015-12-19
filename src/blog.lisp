@@ -68,45 +68,7 @@
                 :tags (split-sequence:split-sequence #\Space (post-tags post)))))
 
 ;;
-;; User functions
-
-(defstruct user
-  id
-  username
-  password
-  groups)
-
-(defun get-user (username password)
-  (if (or (null username) (null password))
-      nil
-      (with-connection (db)
-        (retrieve-one
-         (select :*
-           (from :users)
-           (where (:and (:= :username username)
-                        (:= :password (:crypt password :password)))))
-         :as 'user))))
-
-;;
 ;; Routing Rules
-
-(defroute ("/login" :method :GET) (&key |error|)
-  (render (absolute-path "login.html")
-          (if (string= |error| "t")
-              (list :text "  Incorrect username or password"))))
-
-(defroute ("/login" :method :POST) (&key |username| |password|)
-  (let ((current-user (get-user |username| |password|)))
-    (when (null current-user)
-      (redirect "?error=t"))
-    (unless (null current-user)
-      (setf (gethash :username *session*) |username|)
-      (setf (gethash :groups *session*) (user-groups current-user))
-      (redirect "/blog/new"))))
-
-(defroute "/logout" ()
-  (clrhash *session*)
-  (redirect "/login"))
 
 (defroute ("/blog/post/([\\d]+)" :regexp t) (&key captures)
   (let* ((id (parse-integer (first captures)))
@@ -144,7 +106,7 @@
 
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
   (with-group "dev"
-    (submit-post 
+    (submit-post
      :subject |subject|
      :date (get-universal-time)
      :content |content|
