@@ -20,15 +20,6 @@
 ;;
 ;; Helper funtions
 
-(defun absolute-path (file-path)
-  (merge-pathnames file-path *template-directory*))
-
-(defun absolute-directory (directory-path)
-  (directory (absolute-path directory-path)))
-
-(defun root-path (file-path)
-  (merge-pathnames file-path *application-root*))
-
 (defun root-directory (directory-path)
   (directory (root-path directory-path)))
 
@@ -69,10 +60,10 @@
 ;; General Routing rules
 
 (defroute "/" ()
-  (render (absolute-path "index.html")))
+  (render "index.html"))
 
 (defroute ("/login" :method :GET) (&key |error|)
-  (render (absolute-path "login.html")
+  (render "login.html"
           (if (string= |error| "t")
               (list :text "  Incorrect username or password"))))
 
@@ -92,7 +83,7 @@
 (defroute "/jazz" ()
   (let ((images (root-directory "static/images/Night/*.jpg"))
         (songs (root-directory "static/music/Jazz/*.ogg")))
-    (render (absolute-path "jazz.html")
+    (render "jazz.html"
             (list :image (enough-namestring
                           (random-file images)
                           *static-directory*)
@@ -111,5 +102,5 @@
 
 (defmethod on-exception ((app <web>) error-code)
   (declare (ignore app))
-  (render (absolute-path (format nil "error.html"))
+  (render "error.html"
           (list :error-code error-code :error-message (error-reason error-code))))

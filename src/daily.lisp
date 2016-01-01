@@ -87,15 +87,14 @@
 
 ;;
 ;; Routes
-
 (defroute "/daily" ()
-  (render (absolute-path "daily.html")
+  (render "daily.html"
           (list :dailies (mapcar #'export-daily (dailies-today))
                 :week (mapcar #'export-daily (condense-daily (dailies-week))))))
 
 (defroute ("/daily/new" :method :GET) ()
   (with-group "dev"
-    (render (absolute-path "new_daily.html"))))
+    (render "new_daily.html")))
 
 (defroute ("/daily/new" :method :POST) (&key |title| |time| |tags|)
   (with-group "dev"

@@ -21,10 +21,11 @@
 
 (defparameter *template-registry* (make-hash-table :test 'equal))
 
-(defun render (template-path &optional env)
-  (let ((template (gethash template-path *template-registry*)))
+(defun render (template-path &optional env))
+  (let* ((template (gethash template-path *template-registry*))
+        (template-path (princ-to-string (merge-pathnames template-path *template-directory*))))
     (unless template
-      (setf template (djula:compile-template* (princ-to-string template-path)))
+      (setf template (djula:compile-template* template-path))
       (setf (gethash template-path *template-registry*) template))
     (apply #'djula:render-template*
            template nil

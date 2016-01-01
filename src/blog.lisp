@@ -26,10 +26,6 @@
         (order-by (:desc :id))
         ,@body))))
 
-(defun latest-post ()
-  (get-post
-   (order-by (:desc :id))))
-
 (defun post-by-id (id)
   (get-post
    (where (:= :id id))))
@@ -61,7 +57,7 @@
               (where (:like :tags (concatenate 'string "%" tag "%"))))))))
 
 (defun render-post (post)
-  (render (absolute-path "post.html")
+  (render "post.html"
           (list :subject (post-subject post)
                 :date (post-date post)
                 :content (post-content post)
@@ -81,7 +77,7 @@
          (limit 20)
          (posts (get-posts (limit limit) (offset (* limit (1- page))))))
     (with-item posts
-      (render (absolute-path "blog_index.html")
+      (render "blog_index.html"
               (list :posts posts
                     :previous (if (> page 1) (1- page))
                     :next (if (<= (* limit page) (post-count)) (1+ page)))))))
@@ -94,14 +90,14 @@
                            (offset (* limit (1- page)))
                            (where (:like :tags (concatenate 'string "%" tag "%"))))))
     (with-item posts
-      (render (absolute-path "blog_index.html")
+      (render "blog_index.html"
               (list :posts posts
                     :previous (if (> page 1) (1- page))
                     :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (with-group "dev"
-    (render (absolute-path "new_post.html")
+    (render "new_post.html"
             (list :title "New Post"))))
 
 (defroute ("/blog/new" :method :POST) (&key |subject| |content| |tags|)
@@ -119,7 +115,7 @@
          (post (post-by-id id)))
     (with-item post
       (with-group "dev"
-        (render (absolute-path "new_post.html")
+        (render "new_post.html"
                 (list :title "Edit Post"
                       :page (concatenate 'string "/blog/edit/" id-string)
                       :subject (post-subject post)
