@@ -24,7 +24,7 @@
 ;;
 ;; Daily Helper Functions
 
-(defstruct daily 
+(defstruct daily
   id
   title
   time
@@ -87,6 +87,7 @@
 
 ;;
 ;; Routes
+
 (defroute "/daily" ()
   (render "daily.html"
           (list :dailies (mapcar #'export-daily (dailies-today))
