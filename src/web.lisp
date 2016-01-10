@@ -20,6 +20,9 @@
 ;;
 ;; Helper funtions
 
+(defun root-path (file-path)
+  (merge-pathnames file-path *application-root*))
+
 (defun root-directory (directory-path)
   (directory (root-path directory-path)))
 
