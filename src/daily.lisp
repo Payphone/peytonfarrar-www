@@ -8,17 +8,17 @@
        (get-decoded-time)
      ,@body))
 
-(defun get-current-day ()
+(defun current-day ()
   (with-universal-time
-    (declare (ignore second minute hour dow dst-p))
+      (declare (ignore second minute hour dow dst-p))
     (encode-universal-time 0 0 0 date month year tz)))
 
-(defun get-current-week ()
+(defun current-week ()
   (with-universal-time
-    (declare (ignore second minute hour dst-p))
+      (declare (ignore second minute hour dst-p))
     (encode-universal-time 0 0 0 (- date dow) month year tz)))
 
-(defun get-universal-hours ()
+(defun universal-hour ()
   (round (/ (get-universal-time) 60 60)))
 
 ;;
@@ -32,22 +32,22 @@
   tags
   username)
 
-(defun daily-title= (d1 d2)
-  (if (and d1 d2)
-      (string= (daily-title d1) (daily-title d2))))
-
 (defun export-daily (d)
   (list :title (daily-title d) :time (daily-time d)))
 
 (defun condense-daily (daily-lst)
-  (defparameter clst nil)
-  (do* ((lst daily-lst (cdr lst))
-        (d1 nil (first lst))
-        (d2 nil (find-if #'(lambda (x) (daily-title= d1 x)) clst)))
-       ((null lst) clst)
-    (cond ((null d2) (push (car lst) clst))
-          ((daily-title= d1 d2) (incf (daily-time d2) (daily-time d1)))
-          (t (push d1 clst)))))
+  (labels ((title= (d1)
+             (lambda (d2)
+               (and d1 d2
+                    (string= (daily-title d1) (daily-title d2))))))
+    (do* ((lst daily-lst (cdr lst))
+          (clst nil)
+          (d1 (first lst) (first lst))
+          (d2 nil (find-if (title= d1) clst)))
+         ((null lst) clst)
+      (if (and d2 d1)
+          (incf (daily-time d2) (daily-time d1))
+          (push d1 clst)))))
 
 ;;
 ;; Database calls
@@ -63,27 +63,27 @@
 (defun dailies-today ()
   (get-dailies
     (order-by (:desc :id))
-    (where (:<= (:- (get-universal-hours)
+    (where (:<= (:- (universal-hour)
                     (:/ :date 60 60))
                 24))))
 
 (defun dailies-week ()
   (get-dailies
-    (order-by (:desc :id))
-    (where (:>= (:- (:/ :date 60 60 24)
-                    (round (/ (get-current-week) 60 60 24)))
-                0))))
+   (order-by (:desc :id))
+   (where (:>= (:- (:/ :date 60 60 24)
+                   (round (/ (current-week) 60 60 24)))
+               0))))
 
 (defun submit-daily (&key title time tags)
   (if (and title time tags)
       (with-connection (db)
         (execute
          (insert-into :daily
-           (set= :title title
-                 :date (get-current-day)
-                 :time time
-                 :tags tags
-                 :username (gethash :username *session*)))))))
+                      (set= :title title
+                            :date (current-day)
+                            :time time
+                            :tags tags
+                            :username (gethash :username *session*)))))))
 
 ;;
 ;; Routes
