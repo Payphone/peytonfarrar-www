@@ -1,6 +1,31 @@
 (in-package :peytonwww.web)
 
 ;;
+;; General functions
+
+(defun accumulate (fn lst &optional (acc nil))
+  (if (null lst)
+      acc
+      (accumulate fn (cdr lst) (cons (funcall fn (car lst)) acc))))
+
+(defmacro cat (&rest args)
+  `(concatenate 'string ,@args))
+
+;; HTML generators
+(defmacro raw (&rest text)
+  `(format nil ,@text))
+
+(defmacro as (element body &key (attribute ""))
+  `(format nil "~&<~(~A ~A~)>~A</~(~A~)>~%"
+           ',element ,attribute ,body ',element))
+
+(defmacro with (element &body body)
+  `(concatenate 'string
+                (format nil "~&<~(~A~)>~%" ',element)
+                ,@body
+                (format nil "~&</~(~A~)>~%" ',element)))
+
+;;
 ;; Blog post functions
 
 (defstruct post
@@ -131,3 +156,20 @@
                   :content |content|
                   :tags |tags|)
       (redirect "/"))))
+
+(defroute "/blog/rss" ()
+  (cat "<?xml version='1.0' encoding='UTF-8' ?>"
+       "<rss version='2.0'>"
+       (with channel
+         (as title "Peyton Farrar")
+         (as description "A tech blog")
+         (as link "http://peytonfarrar.com/blog/1")
+         (raw "~{~&~A~}"
+              (accumulate (lambda (post)
+                            (with item
+                              (as title (getf post :subject))
+                              (as link (raw "http://peytonfarrar.com/blog/post/~A"
+                                            (getf post :id)))))
+                          (get-posts))))
+       "</rss>"))
+
