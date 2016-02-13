@@ -1,11 +1,11 @@
 {% extends "layouts/default.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
-<div class="postlist"> 
-  <ul> 
+<div class="postlist">
+  <ul>
     {% for post in posts %}
     <li>{{ post.date|date }} >> <a href="/blog/post/{{ post.id }}">{{ post.subject }}</a></li>
-    {% endfor %}		
+    {% endfor %}
 
     {% if previous %}
     <a href="{{ previous }}"><em>Previous</em></a>
@@ -17,5 +17,6 @@
     <a href="{{ next }}"><em>Next</em></a>
     {% endif %}
   </ul>
+  <a href="rss">RSS</a>
 </div>
 {% endblock %}

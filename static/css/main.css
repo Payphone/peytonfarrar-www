@@ -20,7 +20,7 @@ h3 {
     font-weight: normal;
 }
 
-a {	
+a {
     color: #2C82C9;
     text-decoration: none;
     -webkit-transition: 0.2s ease;
@@ -45,7 +45,7 @@ hr {
 
 .content, .postlist {
     position: relative;
-    margin: 1% 20%; 
+    margin: 1% 20%;
     width: 60%;
     height: 100%;
     color: #000;
@@ -55,7 +55,7 @@ hr {
 @media only screen and (max-width: 500px) {
     .content, .postlist {
         position: relative;
-        margin: 1% 5%; 
+        margin: 1% 5%;
         width: 90%;
         color: #000;
         line-height: 25px;
@@ -134,7 +134,7 @@ input {
 }
 
 textarea {
-    font-family: Helvetica, sans-serif; 
+    font-family: Helvetica, sans-serif;
     margin-top: 5px;
     padding: 3px 6px;
     width: 100%;

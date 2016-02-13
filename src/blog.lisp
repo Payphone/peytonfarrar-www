@@ -15,15 +15,19 @@
 (defmacro raw (&rest text)
   `(format nil ,@text))
 
-(defmacro as (element body &key (attribute ""))
-  `(format nil "~&<~(~A ~A~)>~A</~(~A~)>~%"
-           ',element ,attribute ,body ',element))
+(defmacro as (element body)
+  `(format nil "~&<~(~A~)>~A</~(~A~)>~%"
+           ',element ,body ',element))
 
 (defmacro with (element &body body)
   `(concatenate 'string
                 (format nil "~&<~(~A~)>~%" ',element)
                 ,@body
                 (format nil "~&</~(~A~)>~%" ',element)))
+
+(defun in (lst do)
+  (raw "~{~&~A~}"
+       (accumulate do lst)))
 
 ;;
 ;; Blog post functions
@@ -157,6 +161,7 @@
                   :tags |tags|)
       (redirect "/"))))
 
+
 (defroute "/blog/rss" ()
   (cat "<?xml version='1.0' encoding='UTF-8' ?>"
        "<rss version='2.0'>"
@@ -164,12 +169,10 @@
          (as title "Peyton Farrar")
          (as description "A tech blog")
          (as link "http://peytonfarrar.com/blog/1")
-         (raw "~{~&~A~}"
-              (accumulate (lambda (post)
-                            (with item
-                              (as title (getf post :subject))
-                              (as link (raw "http://peytonfarrar.com/blog/post/~A"
-                                            (getf post :id)))))
-                          (get-posts))))
+         (in (get-posts)
+             (lambda (post)
+               (with item
+                 (as title (getf post :subject))
+                 (as link (raw "http://peytonfarrar.com/blog/post/~A"
+                               (getf post :id)))))))
        "</rss>"))
-
