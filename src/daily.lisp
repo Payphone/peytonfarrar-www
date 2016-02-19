@@ -24,29 +24,18 @@
 ;;
 ;; Daily Helper Functions
 
-(defstruct daily
-  id
-  title
-  time
-  date
-  tags
-  username)
-
-(defun export-daily (d)
-  (list :title (daily-title d) :time (daily-time d)))
-
 (defun condense-daily (daily-lst)
   (labels ((title= (d1)
              (lambda (d2)
                (and d1 d2
-                    (string= (daily-title d1) (daily-title d2))))))
+                  (string= (getf d1 :title) (getf d2 :title))))))
     (do* ((lst daily-lst (cdr lst))
           (clst nil)
           (d1 (first lst) (first lst))
           (d2 nil (find-if (title= d1) clst)))
          ((null lst) clst)
       (if (and d2 d1)
-          (incf (daily-time d2) (daily-time d1))
+          (incf (getf d2 :time) (getf d1 :time))
           (push d1 clst)))))
 
 ;;
@@ -57,8 +46,7 @@
      (retrieve-all
       (select :*
         (from :daily)
-        ,@body)
-      :as 'daily)))
+        ,@body))))
 
 (defun dailies-today ()
   (get-dailies
@@ -69,29 +57,29 @@
 
 (defun dailies-week ()
   (get-dailies
-   (order-by (:desc :id))
-   (where (:>= (:- (:/ :date 60 60 24)
-                   (round (/ (current-week) 60 60 24)))
-               0))))
+    (order-by (:desc :id))
+    (where (:>= (:- (:/ :date 60 60 24)
+                    (round (/ (current-week) 60 60 24)))
+                0))))
 
-(defun submit-daily (&key title time tags)
-  (if (and title time tags)
-      (with-connection (db)
-        (execute
-         (insert-into :daily
-                      (set= :title title
-                            :date (current-day)
-                            :time time
-                            :tags tags
-                            :username (gethash :username *session*)))))))
+  (defun submit-daily (&key title time tags)
+    (if (and title time tags)
+        (with-connection (db)
+          (execute
+           (insert-into :daily
+             (set= :title title
+                   :date (current-day)
+                   :time time
+                   :tags tags
+                   :username (gethash :username *session*)))))))
 
 ;;
 ;; Routes
 
 (defroute "/daily" ()
   (render "daily.html"
-          (list :dailies (mapcar #'export-daily (dailies-today))
-                :week (mapcar #'export-daily (condense-daily (dailies-week))))))
+          (list :dailies (dailies-today)
+                :week (condense-daily (dailies-week)))))
 
 (defroute ("/daily/new" :method :GET) ()
   (with-group "dev"
