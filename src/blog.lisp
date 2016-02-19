@@ -101,6 +101,10 @@
     (with-item post
       (render-post post))))
 
+(defroute "/blog" ()
+  nil
+  (redirect "/blog/1"))
+
 (defroute ("/blog/([1-9]+)" :regexp :t) (&key captures)
   (let* ((page (parse-integer (first captures)))
          (limit 20)
@@ -116,8 +120,8 @@
          (page (parse-integer (second captures)))
          (limit 20)
          (posts (get-posts (limit limit)
-                           (offset (* limit (1- page)))
-                           (where (:like :tags (concatenate 'string "%" tag "%"))))))
+                  (offset (* limit (1- page)))
+                  (where (:like :tags (concatenate 'string "%" tag "%"))))))
     (with-item posts
       (render "blog_index.html"
               (list :posts posts
@@ -176,3 +180,19 @@
                  (as link (raw "http://peytonfarrar.com/blog/post/~A"
                                (getf post :id)))))))
        "</rss>"))
+
+(defroute ("/blog/tag/([\\w]+)/rss" :regexp :t) (&key captures)
+  (let ((tag (first captures)))
+    (cat "<?xml version='1.0' encoding='UTF-8' ?>"
+         "<rss version='2.0'>"
+         (with channel
+           (as title "Peyton Farrar")
+           (as description "A tech blog")
+           (as link "http://peytonfarrar.com/blog/1")
+           (in (get-posts
+                 (where (:like :tags (concatenate 'string "%" tag "%"))))
+               (lambda (post)
+                 (with item
+                   (as title (getf post :subject))
+                   (as link (raw "http://peytonfarrar.com/blog/post/~A"
+                                 (getf post :id))))))))))

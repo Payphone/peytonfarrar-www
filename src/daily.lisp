@@ -62,16 +62,16 @@
                     (round (/ (current-week) 60 60 24)))
                 0))))
 
-  (defun submit-daily (&key title time tags)
-    (if (and title time tags)
-        (with-connection (db)
-          (execute
-           (insert-into :daily
-             (set= :title title
-                   :date (current-day)
-                   :time time
-                   :tags tags
-                   :username (gethash :username *session*)))))))
+(defun submit-daily (&key title time tags)
+  (if (and title time tags)
+      (with-connection (db)
+        (execute
+         (insert-into :daily
+           (set= :title title
+                 :date (current-day)
+                 :time time
+                 :tags tags
+                 :username (gethash :username *session*)))))))
 
 ;;
 ;; Routes
