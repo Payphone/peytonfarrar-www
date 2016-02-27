@@ -92,6 +92,12 @@ ul {
 
 /* Misc */
 
+largeImage {
+    position: relative;
+    left: 5%;
+    max-width: 90%;
+}
+
 code {
     display: inline-block;
     word-wrap: break-word;
