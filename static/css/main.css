@@ -8,6 +8,7 @@ body {
     background-color: #1A1A1A;
 }
 
+/* General Styling */
 h2 {
     font-family: 'Nunito', sans-serif;
     font-weight: 400;
@@ -26,6 +27,7 @@ a {
     -webkit-transition: 0.2s ease;
     transition: 0.2s ease;
 }
+
 a:hover {
     color: #36454F;
     -webkit-transition: 0.2s ease;
@@ -38,39 +40,18 @@ hr {
     background: #36454F;
 }
 
-.header, .header h2 a {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 400;
-}
-
-.content, .postlist {
-    position: relative;
+.content {
     margin: 1% 20%;
-    width: 60%;
-    height: 100%;
-    color: #000;
     line-height: 25px;
 }
 
 @media only screen and (max-width: 500px) {
-    .content, .postlist {
-        position: relative;
+    .content {
         margin: 1% 5%;
-        width: 90%;
-        color: #000;
-        line-height: 25px;
     }
     .cols {
-        float: none;
-        min-height: 1px;
         margin-left: 25%;
     }
-}
-
-.largeImage {
-    position: relative;
-    left: 5%;
-    max-width: 90%;
 }
 
 ul {
@@ -82,6 +63,8 @@ ul {
     text-align: center;
 }
 
+/* Grid */
+
 .row {
     margin: 1% 0px;
     overflow: hidden;
@@ -90,25 +73,33 @@ ul {
     float: left;
     min-height: 1px;
 }
+
 .c6 {
-    width:50%;
+    width: 50%;
 }
 .c4 {
-    width:37.5%;
+    width: 33.33%;
 }
 .c3 {
     width: 25%;
 }
 .c2 {
-    width: 12.5%;
+    width: 16.66%;
+}
+.c1 {
+    width: 8.33%;
 }
 
+/* Misc */
+
 code {
-    font-family: Helvetica, sans-serif;
-    color: #FFF;
-    background-color: #36454F;
-    border-radius: 3px;
-    padding: 2px;
+    display: inline-block;
+    word-wrap: break-word;
+    border-left: 3px solid #36454F;
+    background-color: #f8f8f8;
+    padding-left: 8px;
+    width: 100%;
+    white-space: pre-wrap;
 }
 
 .alert-error {
@@ -153,6 +144,7 @@ button {
     -webkit-transition: 0.2s ease;
     transition: 0.2s ease;
 }
+
 button:hover {
     background-color: #EFEFEF;
     -webkit-transition: 0.2s ease;

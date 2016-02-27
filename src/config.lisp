@@ -1,16 +1,18 @@
 (in-package :cl-user)
 (defpackage peytonwww.config
-(:use :cl)
-  (:import-from :envy
-                :config-env-var
-                :defconfig)
-  (:export :config
-           :*application-root*
-           :*static-directory*
-           :*template-directory*
-           :appenv
-           :developmentp
-           :productionp))
+  (:use :cl)
+  (:import-from
+   :envy
+   :config-env-var
+   :defconfig)
+  (:export
+   :config
+   :*application-root*
+   :*static-directory*
+   :*template-directory*
+   :appenv
+   :developmentp
+   :productionp))
 (in-package :peytonwww.config)
 
 (setf (config-env-var) "APP_ENV")

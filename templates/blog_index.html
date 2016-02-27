@@ -1,10 +1,12 @@
 {% extends "layouts/default.html" %}
 {% block title %}Blog{% endblock %}
 {% block content %}
-<div class="postlist">
+<div class="content">
   <ul>
     {% for post in posts %}
-    <li>{{ post.date|date }} >> <a href="/blog/post/{{ post.id }}">{{ post.subject }}</a></li>
+    <li>{{ post.date|date }} >>
+      <a href="/blog/post/{{ post.id }}">{{ post.subject }}</a>
+    </li>
     {% endfor %}
 
     {% if previous %}
