@@ -10,17 +10,20 @@
 
 (defun current-day ()
   (with-universal-time
-      (declare (ignore second minute hour dow dst-p))
+    (declare (ignore second minute hour dow dst-p))
     (encode-universal-time 0 0 0 date month year tz)))
 
 (defun current-week ()
   "Gives the date of Monday of the current week"
   (with-universal-time
     (declare (ignore second minute hour dst-p))
-    (let ((monday (if (eq (- date dow) 0)
-                      1
+    (let ((current-month (if (eq (- date dow) 0)
+                             (1- month)
+                             month))
+          (monday (if (eq (- date dow) 0)
+                      (local-time:days-in-month current-month year)
                       (- date dow))))
-      (encode-universal-time 0 0 0 monday month year tz))))
+      (encode-universal-time 0 0 0 monday current-month year tz))))
 
 (defun universal-hour ()
   (round (/ (get-universal-time) 60 60)))
@@ -28,7 +31,7 @@
 ;;
 ;; Daily Helper Functions
 
-(defun condense-daily (daily-lst)
+(defun condense-dailies (daily-lst)
   (labels ((title= (d1)
              (lambda (d2)
                (and d1 d2
@@ -83,7 +86,7 @@
 (defroute "/daily" ()
   (render "daily.html"
           (list :dailies (dailies-today)
-                :week (condense-daily (dailies-week)))))
+                :week (condense-dailies (dailies-week)))))
 
 (defroute ("/daily/new" :method :GET) ()
   (with-group "dev"
