@@ -17,12 +17,12 @@
   "Gives the date of Monday of the current week"
   (with-universal-time
     (declare (ignore second minute hour dst-p))
-    (let ((current-month (if (eq (- date dow) 0)
-                             (1- month)
-                             month))
-          (monday (if (eq (- date dow) 0)
-                      (local-time:days-in-month current-month year)
-                      (- date dow))))
+    (let* ((current-month (if (eq (- date dow) 0)
+                              (1- month)
+                              month))
+           (monday (if (eq (- date dow) 0)
+                       (local-time:days-in-month current-month year)
+                       (- date dow))))
       (encode-universal-time 0 0 0 monday current-month year tz))))
 
 (defun universal-hour ()
