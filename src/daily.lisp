@@ -14,9 +14,13 @@
     (encode-universal-time 0 0 0 date month year tz)))
 
 (defun current-week ()
+  "Gives the date of Monday of the current week"
   (with-universal-time
-      (declare (ignore second minute hour dst-p))
-    (encode-universal-time 0 0 0 (- date dow) month year tz)))
+    (declare (ignore second minute hour dst-p))
+    (let ((monday (if (eq (- date dow) 0)
+                      1
+                      (- date dow))))
+      (encode-universal-time 0 0 0 monday month year tz))))
 
 (defun universal-hour ()
   (round (/ (get-universal-time) 60 60)))
