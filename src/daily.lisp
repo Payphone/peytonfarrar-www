@@ -32,9 +32,9 @@
 ;; Daily Helper Functions
 
 (defun condense-dailies (daily-lst)
-  (labels ((title= (d1)
-             (lambda (d2)
-               (and d1 d2
+  (flet ((title= (d1)
+           (lambda (d2)
+             (and d1 d2
                   (string= (getf d1 :title) (getf d2 :title))))))
     (do* ((lst daily-lst (cdr lst))
           (clst nil)

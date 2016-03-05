@@ -49,7 +49,7 @@ hr {
     .content {
         margin: 1% 5%;
     }
-    .cols {
+    .col, .cols {
         margin-left: 25%;
     }
 }
@@ -121,13 +121,14 @@ code {
 }
 
 input {
+    display: block;
     border: 1px solid #ccc;
     border-radius: 4px;
     color: #36454F;
     font-size: 14px;
     height: 17px;
     padding: 3px 6px;
-    width: 100%;
+    width: 250px;
 }
 
 textarea {
@@ -141,7 +142,12 @@ textarea {
     resize: none;
 }
 
+label {
+    display: block;
+}
+
 button {
+    display: block;
     background-color: #FFF;
     border-radius: 4px;
     margin-top: 10px;
@@ -150,7 +156,6 @@ button {
     -webkit-transition: 0.2s ease;
     transition: 0.2s ease;
 }
-
 button:hover {
     background-color: #EFEFEF;
     -webkit-transition: 0.2s ease;
