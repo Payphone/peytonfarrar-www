@@ -2,6 +2,7 @@ body {
     font-family: Helvetica, sans-serif;
     background-color: #F6F6F6;
     height: 100%;
+    color: #090909;
 }
 
 .dark {
@@ -37,7 +38,7 @@ a:hover {
 hr {
     border: 0;
     height: 3px;
-    background: #36454F;
+    background: #454545;
 }
 
 .content {
@@ -101,11 +102,11 @@ ul {
 code {
     display: inline-block;
     word-wrap: break-word;
-    border-left: 3px solid #36454F;
-    background-color: #f8f8f8;
-    padding-left: 8px;
-    width: 100%;
     white-space: pre-wrap;
+    border-left: 3px solid #454545;
+    width: 100%;
+    background-color: #FBFBFB;
+    padding-left: 8px;
 }
 
 .alert-error {
@@ -124,8 +125,7 @@ input {
     display: block;
     border: 1px solid #ccc;
     border-radius: 4px;
-    color: #36454F;
-    font-size: 14px;
+    mont-size: 14px;
     height: 17px;
     padding: 3px 6px;
     width: 250px;
@@ -136,7 +136,6 @@ textarea {
     margin-top: 5px;
     padding: 3px 6px;
     width: 100%;
-    color: #36454F;
     border: 1px solid #ccc;
     border-radius: 4px;
     resize: none;
