@@ -3,31 +3,30 @@
 ;;
 ;; General functions
 
-(defun accumulate (fn lst &optional (acc nil))
-  (if (null lst)
-      acc
-      (accumulate fn (cdr lst) (cons (funcall fn (car lst)) acc))))
-
-(defmacro cat (&rest args)
-  `(concatenate 'string ,@args))
+(defmacro cat (&rest strings)
+  "Concatenates strings"
+  `(concatenate 'string ,@strings))
 
 ;; HTML generators
 (defmacro raw (&rest text)
+  "Alias for format used in HTML generation"
   `(format nil ,@text))
 
 (defmacro as (element body)
+  "Creates a single line HTML element"
   `(format nil "~&<~(~A~)>~A</~(~A~)>~%"
            ',element ,body ',element))
 
 (defmacro with (element &body body)
-  `(concatenate 'string
-                (format nil "~&<~(~A~)>~%" ',element)
-                ,@body
-                (format nil "~&</~(~A~)>~%" ',element)))
+  "Creates a multiline HTML element"
+  `(cat (format nil "~&<~(~A~)>~%" ',element)
+        ,@body
+        (format nil "~&</~(~A~)>~%" ',element)))
 
 (defun in (lst do)
+  "Maps a function to a list then prints out each element of the resulting list"
   (raw "~{~&~A~}"
-       (accumulate do lst)))
+       (map 'list do lst)))
 
 ;;
 ;; Blog post functions
@@ -40,6 +39,7 @@
   tags)
 
 (defmacro get-post (&body body)
+  "Generic macro for retrieving a single post"
   `(with-connection (db)
      (retrieve-one
       (select :*
@@ -48,6 +48,7 @@
       :as 'post)))
 
 (defmacro get-posts (&body body)
+  "Generic macro for retrieving multiple posts"
   `(with-connection (db)
      (retrieve-all
       (select :*
@@ -56,36 +57,41 @@
         ,@body))))
 
 (defun post-by-id (id)
+  "Function for retrieving a post using an ID to query"
   (get-post
-   (where (:= :id id))))
+    (where (:= :id id))))
 
 (defun submit-post (&key subject date content tags)
+  "Inserts post into posts table"
   (with-connection (db)
     (execute
      (insert-into :posts
-                  (set= :subject subject
-                        :date date
-                        :content content
-                        :tags tags)))))
+       (set= :subject subject
+             :date date
+             :content content
+             :tags tags)))))
 
 (defun alter-post (id &key subject content tags)
+  "Edits a post using an ID to query"
   (with-connection (db)
     (execute
      (update :posts
-             (set= :subject subject
-                   :content content
-                   :tags tags)
-             (where (:= :id id))))))
+       (set= :subject subject
+             :content content
+             :tags tags)
+       (where (:= :id id))))))
 
 (defun post-count (&optional tag)
+  "Returns the number of posts in the table"
   (with-connection (db)
     (cadr
      (retrieve-one
       (select ((:count :*))
-              (from :posts)
-              (where (:like :tags (concatenate 'string "%" tag "%"))))))))
+        (from :posts)
+        (where (:like :tags (cat "%" tag "%"))))))))
 
 (defun render-post (post)
+  "Displays a post using the post template"
   (render "post.html"
           (list :subject (post-subject post)
                 :date (post-date post)
@@ -120,8 +126,8 @@
          (page (parse-integer (second captures)))
          (limit 20)
          (posts (get-posts (limit limit)
-                  (offset (* limit (1- page)))
-                  (where (:like :tags (concatenate 'string "%" tag "%"))))))
+                           (offset (* limit (1- page)))
+                           (where (:like :tags (cat "%" tag "%"))))))
     (with-item posts
       (render "blog_index.html"
               (list :posts posts
@@ -150,7 +156,7 @@
       (with-group "dev"
         (render "new_post.html"
                 (list :title "Edit Post"
-                      :page (concatenate 'string "/blog/edit/" id-string)
+                      :page (cat "/blog/edit/" id-string)
                       :subject (post-subject post)
                       :content (post-content post)
                       :tags (post-tags post)))))))
@@ -190,7 +196,7 @@
            (as description "A tech blog")
            (as link "http://peytonfarrar.com/blog/1")
            (in (get-posts
-                 (where (:like :tags (concatenate 'string "%" tag "%"))))
+                 (where (:like :tags (cat "%" tag "%"))))
                (lambda (post)
                  (with item
                    (as title (getf post :subject))
