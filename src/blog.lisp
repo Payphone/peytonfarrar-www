@@ -107,6 +107,19 @@
     (with-item post
       (render-post post))))
 
+(defroute ("/blog/tag/([\\w]+)/([\\d]+)" :regexp :t) (&key captures)
+  (let* ((tag (first captures))
+         (page (parse-integer (second captures)))
+         (limit 20)
+         (posts (get-posts (limit limit)
+                           (offset (* limit (1- page)))
+                           (where (:like :tags (cat "%" tag "%"))))))
+    (with-item posts
+      (render "blog_index.html"
+              (list :posts posts
+                    :previous (if (> page 1) (1- page))
+                    :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
+
 (defroute ("/blog/tag/([\\w]+)/rss|/blog/rss" :regexp :t) (&key captures)
   (let ((tag (first captures)))
     (cat "<?xml version='1.0' encoding='UTF-8' ?>"
@@ -122,29 +135,6 @@
                            (as title (getf post :subject))
                            (as link (raw "http://peytonfarrar.com/blog/post/~A"
                                          (getf post :id))))))))))
-
-(defroute ("/blog/([1-9]+)|/blog" :regexp :t) (&key captures)
-  (let* ((page (aif (first captures) (parse-integer it) 1))
-         (limit 20)
-         (posts (get-posts (limit limit) (offset (* limit (1- page))))))
-    (with-item posts
-      (render "blog_index.html"
-              (list :posts posts
-                    :previous (if (> page 1) (1- page))
-                    :next (if (<= (* limit page) (post-count)) (1+ page)))))))
-
-(defroute ("/blog/tag/([\\w]+)/([\\d]+)" :regexp :t) (&key captures)
-  (let* ((tag (first captures))
-         (page (parse-integer (second captures)))
-         (limit 20)
-         (posts (get-posts (limit limit)
-                           (offset (* limit (1- page)))
-                           (where (:like :tags (cat "%" tag "%"))))))
-    (with-item posts
-      (render "blog_index.html"
-              (list :posts posts
-                    :previous (if (> page 1) (1- page))
-                    :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (with-group "dev"
@@ -182,3 +172,14 @@
                   :content |content|
                   :tags |tags|)
       (redirect "/"))))
+
+(defroute ("/blog/([1-9]+)|/blog" :regexp :t) (&key captures)
+  (let* ((page (aif (first captures) (parse-integer it) 1))
+         (limit 20)
+         (posts (get-posts (limit limit) (offset (* limit (1- page))))))
+    (with-item posts
+      (render "blog_index.html"
+              (list :posts posts
+                    :previous (if (> page 1) (1- page))
+                    :next (if (<= (* limit page) (post-count)) (1+ page)))))))
+
