@@ -6,7 +6,8 @@
         :peytonwww.view
         :peytonwww.db
         :datafly
-        :sxql)
+        :sxql
+        :local-time)
   (:export :*web*))
 (in-package :peytonwww.web)
 
