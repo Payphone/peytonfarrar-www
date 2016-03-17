@@ -3,35 +3,23 @@
 ;;
 ;; Time Functions
 
-(defmacro with-universal-time (&body body)
-  `(multiple-value-bind (second minute hour date month year dow dst-p tz)
-       (get-decoded-time)
-     ,@body))
-
 (defun current-day ()
-  (with-universal-time
-    (declare (ignore second minute hour dow dst-p))
-    (encode-universal-time 0 0 0 date month year tz)))
+  "Returns the timestamp for the current day"
+  (timestamp-minimize-part (now) :hour))
 
 (defun current-week ()
-  "Gives the date of Monday of the current week"
-  (with-universal-time
-    (declare (ignore second minute hour dst-p))
-    (let* ((current-month (if (eq (- date dow) 0)
-                              (1- month)
-                              month))
-           (monday (if (eq (- date dow) 0)
-                       (local-time:days-in-month current-month year)
-                       (- date dow))))
-      (encode-universal-time 0 0 0 monday current-month year tz))))
+  "Gives the universal time of the Monday of the current week"
+  (adjust-timestamp (current-day) (offset :day-of-week :monday)))
 
 (defun universal-hour ()
-  (round (/ (get-universal-time) 60 60)))
+  "Gives the total number of hours since January 1, 1970"
+  (values (round (/ (get-universal-time) 60 60))))
 
 ;;
 ;; Daily Helper Functions
 
 (defun condense-dailies (daily-lst)
+  "Combines the time of daily entries with the same title"
   (flet ((title= (d1)
            (lambda (d2)
              (and d1 d2
@@ -49,33 +37,38 @@
 ;; Database calls
 
 (defmacro get-dailies (&body body)
+  "Generic way of quering for dailies"
   `(with-connection (db)
      (retrieve-all
       (select :*
-        (from :daily)
-        ,@body))))
+              (from :daily)
+              ,@body))))
 
 (defun dailies-today ()
+  "Returns all the dailies for the current day"
   (get-dailies
-    (order-by (:desc :id))
-    (where (:<= (:- (universal-hour)
-                    (:/ :date 60 60))
-                24))))
+   (order-by (:desc :id))
+   (where (:<= (:- (universal-hour)
+                   (:/ :date 60 60))
+               24))))
 
 (defun dailies-week ()
+  "Returns all the dailies for the current week"
   (get-dailies
     (order-by (:desc :id))
     (where (:>= (:- (:/ :date 60 60 24)
-                    (round (/ (current-week) 60 60 24)))
+                    (round (/ (timestamp-to-universal (current-week))
+                              60 60 24)))
                 0))))
 
 (defun submit-daily (&key title time tags)
+  "Inserts a new daily into the daily table"
   (if (and title time tags)
       (with-connection (db)
         (execute
          (insert-into :daily
            (set= :title title
-                 :date (current-day)
+                 :date (timestamp-to-universal (current-day))
                  :time time
                  :tags tags
                  :username (gethash :username *session*)))))))
