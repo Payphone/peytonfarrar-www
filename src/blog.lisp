@@ -107,12 +107,24 @@
     (with-item post
       (render-post post))))
 
-(defroute "/blog" ()
-  nil
-  (redirect "/blog/1"))
+(defroute ("/blog/tag/([\\w]+)/rss|/blog/rss" :regexp :t) (&key captures)
+  (let ((tag (first captures)))
+    (cat "<?xml version='1.0' encoding='UTF-8' ?>"
+         "<rss version='2.0'>"
+         (with channel
+               (as title "Peyton Farrar")
+               (as description "A tech blog")
+               (as link "http://peytonfarrar.com/blog/1")
+               (in (get-posts
+                    (where (:like :tags (cat "%" tag "%"))))
+                   (lambda (post)
+                     (with item
+                           (as title (getf post :subject))
+                           (as link (raw "http://peytonfarrar.com/blog/post/~A"
+                                         (getf post :id))))))))))
 
-(defroute ("/blog/([1-9]+)" :regexp :t) (&key captures)
-  (let* ((page (parse-integer (first captures)))
+(defroute ("/blog/([1-9]+)|/blog" :regexp :t) (&key captures)
+  (let* ((page (aif (first captures) (parse-integer it) 1))
          (limit 20)
          (posts (get-posts (limit limit) (offset (* limit (1- page))))))
     (with-item posts
@@ -149,11 +161,11 @@
     (redirect "/")))
 
 (defroute ("/blog/edit/([\\d]+)" :regexp :t) (&key captures)
-  (let* ((id-string (first captures))
-         (id (parse-integer id-string))
-         (post (post-by-id id)))
-    (with-item post
-      (with-group "dev"
+  (with-group "dev"
+    (let* ((id-string (first captures))
+           (id (parse-integer id-string))
+           (post (post-by-id id)))
+      (with-item post
         (render "new_post.html"
                 (list :title "Edit Post"
                       :page (cat "/blog/edit/" id-string)
@@ -163,42 +175,10 @@
 
 (defroute ("/blog/edit/([\\d]+)" :regexp :t :method :POST)
     (&key captures |subject| |content| |tags|)
-  (let ((id (parse-integer (first captures))))
-    (with-group "dev"
+  (with-group "dev"
+    (let ((id (parse-integer (first captures))))
       (alter-post id
                   :subject |subject|
                   :content |content|
                   :tags |tags|)
       (redirect "/"))))
-
-
-(defroute "/blog/rss" ()
-  (cat "<?xml version='1.0' encoding='UTF-8' ?>"
-       "<rss version='2.0'>"
-       (with channel
-         (as title "Peyton Farrar")
-         (as description "A tech blog")
-         (as link "http://peytonfarrar.com/blog/1")
-         (in (get-posts)
-             (lambda (post)
-               (with item
-                 (as title (getf post :subject))
-                 (as link (raw "http://peytonfarrar.com/blog/post/~A"
-                               (getf post :id)))))))
-       "</rss>"))
-
-(defroute ("/blog/tag/([\\w]+)/rss" :regexp :t) (&key captures)
-  (let ((tag (first captures)))
-    (cat "<?xml version='1.0' encoding='UTF-8' ?>"
-         "<rss version='2.0'>"
-         (with channel
-           (as title "Peyton Farrar")
-           (as description "A tech blog")
-           (as link "http://peytonfarrar.com/blog/1")
-           (in (get-posts
-                 (where (:like :tags (cat "%" tag "%"))))
-               (lambda (post)
-                 (with item
-                   (as title (getf post :subject))
-                   (as link (raw "http://peytonfarrar.com/blog/post/~A"
-                                 (getf post :id))))))))))
