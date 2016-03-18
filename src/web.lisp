@@ -80,14 +80,13 @@
 
 (defroute ("/login" :method :GET) (&key |error|)
   (render "login.html"
-          (if (string= |error| "t")
-              (list :text "  Incorrect username or password"))))
+          (when (string= |error| "t")
+            (list :text "Incorrect username or password"))))
 
 (defroute ("/login" :method :POST) (&key |username| |password|)
   (let ((current-user (login |username| |password|)))
-    (when (null current-user)
-      (redirect "?error=t"))
-    (unless (null current-user)
+    (unless current-user (redirect "?error=t"))
+    (when current-user
       (setf (gethash :username *session*) |username|)
       (setf (gethash :groups *session*) (user-groups current-user))
       (redirect "/blog/new"))))
