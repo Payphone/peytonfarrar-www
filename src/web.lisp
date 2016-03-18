@@ -22,20 +22,25 @@
 ;; Helper funtions
 
 (defun root-path (file-path)
+  "Returns the application root path"
   (merge-pathnames file-path *application-root*))
 
 (defun root-directory (directory-path)
+  "Returns the files in the directory with respect to the application root"
   (directory (root-path directory-path)))
 
 (defun random-file (files)
+  "Given a list of files, returns a random element"
   (nth (random (list-length files)) files))
 
 (defmacro with-group (group &body body)
+  "Ensures the user is a member of the group"
   `(if (search ,group (gethash :groups *session*))
        (progn ,@body)
        (throw-code 403)))
 
 (defmacro with-item (item &body body)
+  "Ensures the item is a non-nil value"
   `(if ,item
        (progn ,@body)
        (throw-code 404)))
@@ -56,19 +61,19 @@
   password
   groups)
 
-(defun get-user (username password)
-  (if (or (null username) (null password))
-      nil
-      (with-connection (db)
-        (retrieve-one
-         (select :*
-                 (from :users)
-                 (where (:and (:= :username username)
-                              (:= :password (:crypt password :password)))))
-         :as 'user))))
+(defun login (username password)
+  "Returns the user with the corresponding username and password"
+  (with-item (and username password)
+    (with-connection (db)
+      (retrieve-one
+       (select :*
+               (from :users)
+               (where (:and (:= :username username)
+                            (:= :password (:crypt password :password)))))
+       :as 'user))))
 
 ;;
-;; General Routing rules
+;; General routing rules
 
 (defroute "/" ()
   (render "index.html"))
@@ -79,7 +84,7 @@
               (list :text "  Incorrect username or password"))))
 
 (defroute ("/login" :method :POST) (&key |username| |password|)
-  (let ((current-user (get-user |username| |password|)))
+  (let ((current-user (login |username| |password|)))
     (when (null current-user)
       (redirect "?error=t"))
     (unless (null current-user)
@@ -104,12 +109,11 @@
 ;;
 ;; Error pages
 
-(defparameter *http-error*
-  '((404 . "Not Found")
-    (403 . "Insufficient Permissions")))
-
-(defun error-reason (error-code)
-  (cdr (assoc error-code *http-error*)))
+(let ((http-error
+       '((404 . "Not Found")
+         (403 . "Insufficient Permissions"))))
+  (defun error-reason (error-code)
+    (cdr (assoc error-code http-error))))
 
 (defmethod on-exception ((app <web>) error-code)
   (declare (ignore app))
