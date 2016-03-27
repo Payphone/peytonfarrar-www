@@ -1,8 +1,8 @@
 body {
-    font-family: Helvetica, sans-serif;
-    background-color: #F6F6F6;
+    font-family: Georgia, Serif;
+    background-color: #FAFAFA;
     height: 100%;
-    color: #090909;
+    color: #4b4b4b;
 }
 
 .dark {
@@ -10,15 +10,14 @@ body {
 }
 
 /* General Styling */
-h2 {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 400;
-    font-size: 2em;
+h2, .header {
+    font-family: Helvetica, Sans-Serif;
+    font-weight: 100;
+    font-size: 2rem;
 }
 
 h3 {
-    font-family: 'Nunito', sans-serif;
-    font-size: 1.3em;
+    font-size: 2rem;
     font-weight: normal;
 }
 
@@ -41,9 +40,18 @@ hr {
     background: #454545;
 }
 
+p {
+    font-size: 1.2rem;
+    font-weight: normal;
+}
+
+p::first-letter {
+    font-size: 2rem;
+}
+
 .content {
     margin: 1% 10%;
-    line-height: 25px;
+    line-height: 1.6;
 }
 
 @media only screen and (max-width: 500px) {
@@ -124,16 +132,15 @@ code {
 
 input {
     display: block;
+    font-size: 0.9rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    mont-size: 14px;
     height: 17px;
     padding: 3px 6px;
     width: 250px;
 }
 
 textarea {
-    font-family: Helvetica, sans-serif;
     margin-top: 5px;
     padding: 3px 6px;
     width: 100%;

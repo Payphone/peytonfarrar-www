@@ -2,9 +2,10 @@
 {% block title %}{{ subject }}{% endblock %}
 {% block content %}
 <div class="content">
-  <h3>{{ subject }}</h3>
-  <h3>{{ date|date }}</h3>
-  <p>{{ content|safe }}</p>
+  <article>
+    <h3 class="center">{{ subject }}</h3>
+    <p>{{ content|safe }}</p>
+  </article>
   {% ifnotequal tags.first "" %}
     <hr />
     Tags:
