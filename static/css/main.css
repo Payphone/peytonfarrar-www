@@ -115,6 +115,7 @@ code {
     width: 100%;
     background-color: #FBFBFB;
     padding-left: 8px;
+    font-size: 1rem;
 }
 
 .alert-error {
