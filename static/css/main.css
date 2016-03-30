@@ -40,12 +40,12 @@ hr {
     background: #454545;
 }
 
-p {
+article > p {
     font-size: 1.2rem;
     font-weight: normal;
 }
 
-p::first-letter {
+article > p::first-letter {
     font-size: 2rem;
 }
 
