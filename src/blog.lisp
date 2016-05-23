@@ -121,6 +121,7 @@
                     :next (if (<= (* limit page) (post-count tag)) (1+ page)))))))
 
 (defroute ("/blog/tag/([\\w]+)/rss|/blog/rss" :regexp :t) (&key captures)
+  (setf (getf (response-headers *response*) :content-type) "application/rss+xml")
   (let ((tag (first captures)))
     (cat "<?xml version='1.0' encoding='UTF-8' ?>"
          "<rss version='2.0'>"
