@@ -134,7 +134,8 @@
                      (with item
                            (as title (getf post :subject))
                            (as link (raw "http://peytonfarrar.com/blog/post/~A"
-                                         (getf post :id))))))))))
+                                         (getf post :id)))))))
+         "</rss>")))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
   (with-group "dev"
