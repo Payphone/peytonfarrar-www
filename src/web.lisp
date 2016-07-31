@@ -29,10 +29,6 @@
   "Returns the files in the directory with respect to the application root"
   (directory (root-path directory-path)))
 
-(defun random-file (files)
-  "Given a list of files, returns a random element"
-  (nth (random (list-length files)) files))
-
 (defmacro with-group (group &body body)
   "Ensures the user is a member of the group"
   `(if (search ,group (gethash :groups *session*))
@@ -95,17 +91,6 @@
   (clrhash *session*)
   (redirect "/login"))
 
-(defroute "/jazz" ()
-  (let ((images (root-directory "static/images/Night/*.jpg"))
-        (songs (root-directory "static/music/Jazz/*.ogg")))
-    (render "jazz.html"
-            (list :image (enough-namestring
-                          (random-file images)
-                          *static-directory*)
-                  :song (enough-namestring
-                         (random-file songs)
-                         *static-directory*)))))
-;;
 ;; Error pages
 
 (let ((http-error

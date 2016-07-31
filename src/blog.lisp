@@ -184,4 +184,3 @@
               (list :posts posts
                     :previous (if (> page 1) (1- page))
                     :next (if (<= (* limit page) (post-count)) (1+ page)))))))
-
