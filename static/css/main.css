@@ -45,10 +45,6 @@ article > p {
     font-weight: normal;
 }
 
-article > p::first-letter {
-    font-size: 2rem;
-}
-
 .content {
     margin: 1% 10%;
     line-height: 1.6;
