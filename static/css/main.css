@@ -18,9 +18,11 @@ h1 {
 h2 {
   font-family: Georgia, Serif;
   font-size: 1.7rem;
+  font-weight: normal;
 }
 
-.header > h2 {
+
+.header, .header > h2 {
     font-family: Helvetica, Sans-Serif;
     font-weight: 400;
     font-size: 2rem;
