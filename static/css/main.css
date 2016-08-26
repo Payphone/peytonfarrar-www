@@ -20,7 +20,7 @@ h2 {
   font-size: 1.7rem;
 }
 
-h2, .header {
+.header > h2 {
     font-family: Helvetica, Sans-Serif;
     font-weight: 400;
     font-size: 2rem;
