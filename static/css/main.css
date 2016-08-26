@@ -10,6 +10,16 @@ body {
 }
 
 /* General Styling */
+h1 {
+  font-family: Georgia, Serif;
+  font-size: 2rem;
+}
+
+h2 {
+  font-family: Georgia, Serif;
+  font-size: 1.7rem;
+}
+
 h2, .header {
     font-family: Helvetica, Sans-Serif;
     font-weight: 400;
@@ -17,7 +27,8 @@ h2, .header {
 }
 
 h3 {
-    font-size: 2rem;
+    font-family: Helvetica, Sans-Serif;
+    font-size: 1.5rem;
     font-weight: normal;
 }
 
