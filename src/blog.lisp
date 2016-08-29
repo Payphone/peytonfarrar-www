@@ -136,7 +136,7 @@
                            (as title (getf post :subject))
                            (as link (raw "http://peytonfarrar.com/blog/post/~A"
                                          (getf post :id)))
-                           (as description (getf post :content))))))
+                           (as description (remove #\Newline (getf post :content)))))))
          "</rss>")))
 
 (defroute ("/blog/new" :method :GET) (&key |error|)
