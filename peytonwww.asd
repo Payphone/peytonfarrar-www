@@ -27,7 +27,6 @@
                         ((:file "main" :depends-on ("config" "view" "db"))
                          (:file "web" :depends-on ("view"))
                          (:file "blog" :depends-on ("web"))
-                         (:file "daily" :depends-on ("web"))
                          (:file "view" :depends-on ("config"))
                          (:file "db" :depends-on ("config"))
                          (:file "config"))))
