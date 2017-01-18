@@ -6,7 +6,7 @@
 (defsystem peytonwww
   :version "0.1"
   :author "Peyton Farrar"
-  :license ""
+  :license "MIT"
   :depends-on (:clack
                :lack
                :caveman2

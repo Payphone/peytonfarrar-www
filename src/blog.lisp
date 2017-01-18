@@ -1,7 +1,7 @@
 (in-package :peytonwww.web)
 
 ;;
-;; General functions
+;; General utility functions/macros
 
 (defmacro cat (&rest strings)
   "Concatenates strings"

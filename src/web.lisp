@@ -19,7 +19,7 @@
 (clear-routing-rules *web*)
 
 ;;
-;; Helper funtions
+;; Utility funtions
 
 (defun root-path (file-path)
   "Returns the application root path"
