@@ -41,10 +41,10 @@
        (progn ,@body)
        (throw-code 404)))
 
-(defmacro aif (test then else)
+(defmacro aif (condition then &optional else)
   "Anaphoric if, provides a reference to the test condition"
-  `(let ((it ,test))
-     (if ,test
+  `(let ((it ,condition))
+     (if it
          ,then
          ,else)))
 
