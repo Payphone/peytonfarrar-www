@@ -19,4 +19,4 @@
               path
               nil))
   :root *static-directory*)
- *web*)
+ *app*)

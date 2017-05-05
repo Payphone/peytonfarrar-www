@@ -4,7 +4,7 @@
         #:peytonwww.config
         #:peytonwww.view)
   (:export :*app*))
-(in-package :peytonwww.web)
+(in-package :peytonwww.routes)
 
 ;;
 ;; Application
