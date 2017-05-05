@@ -1,12 +1,11 @@
-(in-package :cl-user)
-(defpackage peytonwww
-  (:use :cl)
-  (:import-from :peytonwww.config
-                :config)
-  (:import-from :clack
-                :clackup)
-  (:export :start
-           :stop))
+(defpackage #:peytonwww
+  (:use #:cl)
+  (:import-from #:peytonwww.config
+                #:config)
+  (:import-from #:clack
+                #:clackup)
+  (:export #:start
+           #:stop))
 (in-package :peytonwww)
 
 (defvar *appfile-path*

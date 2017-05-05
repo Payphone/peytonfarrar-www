@@ -1,38 +1,15 @@
-(in-package :cl-user)
 (defpackage peytonwww.config
-  (:use :cl)
-  (:import-from
-   :envy
-   :config-env-var
-   :defconfig)
+  (:use #:cl)
   (:export
-   :config
-   :*application-root*
-   :*static-directory*
-   :*template-directory*
-   :appenv
-   :developmentp
-   :productionp))
+   #:config
+   #:*application-root*
+   #:*static-directory*
+   #:*template-directory*
+   #:*doc-directory*))
 (in-package :peytonwww.config)
 
-(setf (config-env-var) "APP_ENV")
 
 (defparameter *application-root*   (asdf:system-source-directory :peytonwww))
 (defparameter *static-directory*   (merge-pathnames #P"static/" *application-root*))
 (defparameter *template-directory* (merge-pathnames #P"templates/" *application-root*))
-
-(defconfig :common
-    `(:error-log #P"/var/log/webserver/server_error.log"
-      :databases ((:maindb :postgres :database-name "maindb" :username "freebsd"))))
-
-(defun config (&optional key)
-  (envy:config #.(package-name *package*) key))
-
-(defun appenv ()
-  (uiop:getenv (config-env-var #.(package-name *package*))))
-
-(defun developmentp ()
-  (string= (appenv) "development"))
-
-(defun productionp ()
-  (string= (appenv) "production"))
+(defparameter *doc-directory* (merge-pathnames #P"docs/" *static-directory*))
