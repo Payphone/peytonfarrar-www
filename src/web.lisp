@@ -91,9 +91,6 @@
   (clrhash *session*)
   (redirect "/login"))
 
-(defroute "/docs/:document" (&key document)
-  (render (format nil "docs/~A" document)))
-
 ;; Error pages
 
 (let ((http-error
