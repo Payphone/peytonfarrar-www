@@ -15,7 +15,7 @@
  :accesslog
  (:static
   :path (lambda (path)
-          (if (ppcre:scan "^(?:/css/|/misc/)" path)
+          (if (ppcre:scan "^(?:/css/|/misc/|/docs/)" path)
               path
               nil))
   :root *static-directory*)

@@ -19,6 +19,14 @@
 (defroute "/" ()
   (render "index.html"))
 
+(defroute "/docs" ()
+  (render "docs.html"
+          (list :documents
+                (loop for file in (cl-fad:list-directory *doc-directory*)
+                   collect (list :name (pathname-name file)
+                                 :path (format nil "~A.~A" (pathname-name file)
+                                               (pathname-type file)))))))
+
 ;; Error pages
 
 (let ((http-error
