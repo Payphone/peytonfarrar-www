@@ -1,9 +1,13 @@
-(defpackage #:peytonwww.main
-  (:use #:cl)
-  (:export #:start
-           #:stop))
-
-(in-package :peytonwww.main)
+(in-package :cl-user)
+(defpackage peytonwww
+  (:use :cl)
+  (:import-from :peytonwww.config
+                :config)
+  (:import-from :clack
+                :clackup)
+  (:export :start
+           :stop))
+(in-package :peytonwww)
 
 (defvar *appfile-path*
   (asdf:system-relative-pathname :peytonwww #P"app.lisp"))
@@ -18,7 +22,7 @@
         :report "Restart the server"
         (stop))))
   (setf *handler*
-        (apply #'clack:clackup *appfile-path* args)))
+        (apply #'clackup *appfile-path* args)))
 
 (defun stop ()
   (prog1

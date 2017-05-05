@@ -1,0 +1,8 @@
+{% extends "layouts/noheader.html" %}
+{% block title %}{{ error-code }}{% endblock %}
+{% block content %}
+<div class="center">
+  <h2 class="header"><a href="/">HTTP {{ error-code }}</a></h2>
+  <div class="content">{{ error-message }}</div>
+</div>
+{% endblock %}

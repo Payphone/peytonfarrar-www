@@ -1,23 +1,39 @@
-;;;; package.lisp
+(ql:quickload :peytonwww)
 
-(defpackage #:peytonwww
-  (:use #:cl #:peytonwww.main)
-  (:import-from #:peytonwww.config
-                #:*static-directory*)
-  (:import-from #:peytonwww.routes
-                #:*app*)
+(defpackage peytonwww.app
+  (:use :cl)
   (:import-from :lack.builder
                 :builder)
-  (:export #:start
-           #:stop))
-(in-package :peytonwww)
+  (:import-from :ppcre
+                :scan
+                :regex-replace)
+  (:import-from :peytonwww.web
+                :*web*)
+  (:import-from :peytonwww.config
+                :config
+                :productionp
+                :*static-directory*))
+(in-package :peytonwww.app)
 
 (builder
- :accesslog
  (:static
   :path (lambda (path)
-          (if (ppcre:scan "^(?:/css/|/misc/)" path)
+          (if (ppcre:scan "^(?:/images/|/music/|/javascript/|/css/|/js/|/robot\\.txt$|/favicon\\.ico$)" path)
               path
               nil))
   :root *static-directory*)
- *app*)
+ (if (productionp)
+     nil
+     :accesslog)
+ (if (getf (config) :error-log)
+     `(:backtrace
+       :output ,(getf (config) :error-log))
+     nil)
+ :session
+ (if (productionp)
+     nil
+     (lambda (app)
+       (lambda (env)
+         (let ((datafly:*trace-sql* t))
+           (funcall app env)))))
+ *web*)

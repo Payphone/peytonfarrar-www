@@ -1,0 +1,17 @@
+{% extends "layouts/default.html" %}
+{% block title %}{{ subject }}{% endblock %}
+{% block content %}
+<div class="content">
+  <article>
+    <h2 class="center">{{ subject }}</h2>
+    <p>{{ content|safe }}</p>
+  </article>
+  {% ifnotequal tags.first "" %}
+    <hr />
+    Tags:
+    {% for tag in tags %}
+      <a href="/blog/tag/{{ tag }}/1">{{ tag }}</a>
+    {% endfor %}
+  {% endifnotequal %}
+</div>
+{% endblock %}

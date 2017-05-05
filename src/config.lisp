@@ -1,17 +1,38 @@
-;;; config.lisp
-
-(defpackage #:peytonwww.config
-  (:use #:cl)
-  (:export #:*application-root*
-           #:*page-directory*
-           #:*static-directory*
-           #:*template-directory*))
-
+(in-package :cl-user)
+(defpackage peytonwww.config
+  (:use :cl)
+  (:import-from
+   :envy
+   :config-env-var
+   :defconfig)
+  (:export
+   :config
+   :*application-root*
+   :*static-directory*
+   :*template-directory*
+   :appenv
+   :developmentp
+   :productionp))
 (in-package :peytonwww.config)
 
-(defparameter *application-root* (asdf:system-source-directory :peytonwww))
-(defparameter *page-directory* (merge-pathnames #P"pages/" *application-root*))
-(defparameter *doc-directory* (merge-pathnames #P"docs/" *application-root*))
-(defparameter *template-directory* (merge-pathnames #P"templates/"
-                                                    *application-root*))
-(defparameter *static-directory* (merge-pathnames #P"static/" *application-root*))
+(setf (config-env-var) "APP_ENV")
+
+(defparameter *application-root*   (asdf:system-source-directory :peytonwww))
+(defparameter *static-directory*   (merge-pathnames #P"static/" *application-root*))
+(defparameter *template-directory* (merge-pathnames #P"templates/" *application-root*))
+
+(defconfig :common
+    `(:error-log #P"/var/log/webserver/server_error.log"
+      :databases ((:maindb :postgres :database-name "maindb" :username "freebsd"))))
+
+(defun config (&optional key)
+  (envy:config #.(package-name *package*) key))
+
+(defun appenv ()
+  (uiop:getenv (config-env-var #.(package-name *package*))))
+
+(defun developmentp ()
+  (string= (appenv) "development"))
+
+(defun productionp ()
+  (string= (appenv) "production"))
