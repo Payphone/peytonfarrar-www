@@ -1,0 +1,51 @@
+(body :font-family "Georgia, Serif"
+      :background-color "#FAFFS"
+      :height 100%
+      :color "#4B4B4B")
+
+;; Typography ------------------------------------------------------------------
+
+(:let ((weight "normal"))
+  (h1 :font-size 2rem :font-weight #(weight))
+  (h2 :font-size 1.7rem :font-weight #(weight)))
+
+(:let ((font "\"Helvetica, Sans-Serif\""))
+  (h3 :font-family #(font) :font-size 1.5rem)
+
+  ((:or .header (.header > h2))
+   :font-family #(font)
+   :font-weight 400
+   :font-size 2rem))
+
+(a :color "#36454F" :text-decoration none :transition 0.2s ease)
+(a :hover :color "#2C82C9" :transition 0.2s ease)
+
+(ul :list-style-type "none")
+
+(hr :border 0 :height 3px :background "#454545")
+
+((:or .content \#content)
+ :margin 1% 10%
+ :line-height 1.6)
+
+;; Mobile ----------------------------------------------------------------------
+
+(:media "(max-width: 500px)"
+        ((:or .content \#content) :margin 1% 5%)
+        (.cols :margin-left 25%))
+
+;; Grid ------------------------------------------------------------------------
+
+(.row :margin 1% 0px :overflow hidden)
+((:or .col .cols) :float left :min-height 1px)
+
+(.c1 :width 8.33%)
+(.c2 :width 16.66%)
+(.c3 :width 25%)
+(.c4 :width 33.33%)
+(.c5 :width 41.66%)
+(.c6 :width 50%)
+
+;; Misc ------------------------------------------------------------------------
+
+(.center :text-align center)
